@@ -6,7 +6,7 @@ pub fn repo(engine: &str) -> Result<&'static str> {
 }
 pub fn client() -> Result<reqwest::blocking::Client> {
     reqwest::blocking::Client::builder()
-        .user_agent("PatchworkPod/1.0 (unofficial launcher)")
+        .user_agent(concat!("PatchworkPod/", env!("CARGO_PKG_VERSION"), " (unofficial launcher)"))
         .connect_timeout(Duration::from_secs(15))
         .timeout(Duration::from_secs(45))
         .redirect(reqwest::redirect::Policy::custom(|a| {
