@@ -1,16 +1,16 @@
 # Patchwork Pod
 
-**LittleBigPlanet Unified Launcher** — a handmade Windows home for three adventures.
+**LittleBigPlanet Unified Launcher** for Windows.
 
-An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Original stitched planets, layered paper, tactile game cards, daytime and nighttime themes. No game files or official artwork are included.
+An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.1 uses a Popit-style bubble menu and real gameplay screenshots. No game data, firmware or music is included. Screenshot sources and rights are recorded in [IMAGE-SOURCES.md](docs/IMAGE-SOURCES.md); game visuals are excluded from the MIT license.
 
 ## Download
 
-[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download SHA256SUMS.txt to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [verification record](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
+[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download SHA256SUMS.txt to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [1.1 redesign checks](docs/REDESIGN-1.1.md) and [backend verification](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
 
-![The actual Patchwork Pod desktop app](docs/screenshots/day-my-pod.png)
+![The actual Patchwork Pod desktop app](docs/screenshots-v1.1/day-my-pod.png)
 
-![Nighttime theme](docs/screenshots/night-my-pod.png)
+![Nighttime theme](docs/screenshots-v1.1/night-my-pod.png)
 
 ## Supported engines
 

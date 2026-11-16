@@ -2700,7 +2700,7 @@ dependencies = [
 
 [[package]]
 name = "patchwork-pod"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "base64 0.22.1",
  "reqwest 0.12.28",

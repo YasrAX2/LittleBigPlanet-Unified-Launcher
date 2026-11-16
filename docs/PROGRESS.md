@@ -7,3 +7,5 @@ Verification: 16 Rust tests, 3 TypeScript tests, 22 actual Tauri desktop checks,
 Known limits: no actual game playthrough, firmware, online accounts or physical controller testing; Windows display-DPI settings were not changed; release is unsigned; no RustSec advisory audit was run. Current LBPPC requires US/European 1.28 data. LBP1/2 Windows play uses RPCS3; future native adapters do not imply verified public native Windows releases.
 
 Build prerequisites were isolated under the task workspace after automatic review rejected a system-wide Build Tools installer. Rust is under the adjacent toolchain directory; Microsoft compiler/SDK files are under adjacent msvc. These are development tools and are excluded from source and release archives. GitHub CLI authentication is managed by the system credential store; no tokens are in this repository.
+
+Version 1.1 replaces the illustrated scenes with real screenshots and Popit bubble menus. See REDESIGN-1.1.md for current design and test results. Version 1.0 details above remain the backend baseline.
