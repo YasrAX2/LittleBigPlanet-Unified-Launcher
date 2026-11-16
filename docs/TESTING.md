@@ -22,3 +22,5 @@ No owned game dumps, firmware, live online accounts or physical game controller 
 ## Reproduce
 
 Run `npm test`, `npm run build` and `cargo test --manifest-path src-tauri/Cargo.toml --locked`. Build a debug app with `PATCHWORK_TEST_HOME` set to an isolated writable directory and WebView2 debug arguments `--remote-debugging-port=9223`; run `npm run dev` and start the app. `node tests/desktop.mjs` performs real engine downloads; it requires Internet access and disk space. `node tests/visual-check.mjs` captures all sections and runs accessibility scans. `tests/process-check.mjs` expects a separately built two-second fixture executable under the adjacent fixtures/engine directory. These test/debug settings are not enabled in shipped release configuration.
+
+Packaged release smoke test: the compiled app loaded its bundled frontend at tauri.localhost and displayed all three library cards with the WebView2 network set offline. Both official engine settings windows also opened during desktop integration testing. This does not establish real-game offline playability.
