@@ -1,0 +1,33 @@
+[
+  {
+    "theme": "day",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".welcome-strip > .text-link"
+            ],
+            "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #c6d9a7, background color: #59604a, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "lbppc",
+    "repair": "passed",
+    "rollback": "passed"
+  },
+  {
+    "engine": "rpcs3",
+    "repair": "passed",
+    "rollback": "passed"
+  }
+]

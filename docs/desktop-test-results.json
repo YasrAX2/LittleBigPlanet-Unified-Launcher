@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "All three games exist",
+    "No horizontal overflow at 1280",
+    "No horizontal overflow at 1920",
+    "No horizontal overflow at 2560",
+    "Navigation Library",
+    "Navigation Downloads",
+    "Navigation Game files",
+    "Navigation Settings",
+    "Navigation About",
+    "Navigation My Pod",
+    "LBP3 native details",
+    "Theme persisted",
+    "150 percent text has no horizontal overflow",
+    "Missing import rejected",
+    "Unpublished native release is honest",
+    "Live LBPPC requirements",
+    "lbppc official release",
+    "lbppc download and install: ",
+    "lbppc verifies SHA-256",
+    "rpcs3 official release",
+    "rpcs3 download and install: ",
+    "rpcs3 verifies SHA-256"
+  ],
+  "count": 22,
+  "date": "2026-11-16T19:04:21.384Z"
+}

@@ -4,9 +4,13 @@
 
 An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Original stitched planets, layered paper, tactile game cards, daytime and nighttime themes. No game files or official artwork are included.
 
-## Build status
+## Download
 
-Implementation and release verification are in progress. This repository is not yet a verified release. Windows binaries will be published after functional and desktop visual testing. Do not interpret configuration support as proof that the games themselves were played.
+[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download SHA256SUMS.txt to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [verification record](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
+
+![The actual Patchwork Pod desktop app](docs/screenshots/day-my-pod.png)
+
+![Nighttime theme](docs/screenshots/night-my-pod.png)
 
 ## Supported engines
 

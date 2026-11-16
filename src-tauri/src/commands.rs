@@ -112,6 +112,13 @@ pub fn import_data(
     }
     let p = Path::new(&path);
     let r = metadata::inspect(&id, p, update, &requirements_cached(&s))?;
+    for i in c.installations.values() {
+        let root = Path::new(&i.root).canonicalize().map_err(err)?;
+        let data = Path::new(&r.path);
+        if data.starts_with(&root) || root.starts_with(data) {
+            return Err("Game data and executable installations must use separate folders.".into());
+        }
+    }
     if !r.valid {
         return Err(r.messages.join("\n"));
     }
@@ -168,6 +175,18 @@ pub fn import_engine(s: tauri::State<Store>, engine: String, path: String) -> Re
         return Err("Choose LBPPC.exe or rpcs3.exe for the selected engine.".into());
     }
     let root = p.parent().unwrap();
+    for g in &s.get().games {
+        for data in [&g.data, &g.update] {
+            if !data.is_empty() {
+                let data = Path::new(data).canonicalize().map_err(err)?;
+                if root.starts_with(&data) || data.starts_with(root) {
+                    return Err(
+                        "Choose an engine installation separate from original game data.".into(),
+                    );
+                }
+            }
+        }
+    }
     let mut imported = Installation {
         engine: engine.clone(),
         executable: p.to_string_lossy().into(),

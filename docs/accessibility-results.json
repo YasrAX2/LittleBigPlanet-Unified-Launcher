@@ -1,0 +1,62 @@
+[
+  {
+    "theme": "day",
+    "page": "My Pod",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Library",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Downloads",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Game files",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Settings",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "About",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "My Pod",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Library",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Downloads",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Game files",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Settings",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "About",
+    "violations": []
+  }
+]
