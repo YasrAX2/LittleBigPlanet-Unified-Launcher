@@ -19,7 +19,7 @@ Open a game in Library, then **Install** its engine, or **Import existing** and 
 | LBP1 and LBP2 | `rpcs3.exe`; both games can share the same engine. |
 | LBP3, PS4 edition | `LBPPC.exe`; keep its complete package, including bin/scripts and companion files. |
 
-Keep engine folders and game data separate, for example `Engines/RPCS3` and `Games/LBP1`. Do not put game dumps inside managed engine directories.
+Keep engine folders and game data separate, for example `Engines/RPCS3` and `Games/LBP1`. Do not put standalone game dumps inside managed engine directories. RPCS3-installed digital games are the exception: they live in its dev_hdd0/game storage and are relinked if the managed engine moves.
 
 Version 1.5.0 prepares official PS3 firmware automatically after installing/importing RPCS3. **Prepare RPCS3** retries setup. **Install firmware file** accepts an official local `.PUP` if automatic download is unavailable. Installation runs through RPCS3's supported headless installer and checks for the installed firmware afterward. The bundled code pins firmware 4.93 by its size and SHA-256. Sony's published HTTP download is authenticated against that pin before installation; mismatches are refused. Firmware is downloaded separately, not redistributed in release assets.
 

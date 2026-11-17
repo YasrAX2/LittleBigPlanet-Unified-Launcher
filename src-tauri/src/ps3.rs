@@ -133,8 +133,14 @@ fn run_installer_cancellable(i: &Installation, option: &str, path: &Path, cancel
         let dir=tempfile::tempdir().unwrap();
         if let Some(source)=std::env::var_os("PATCHWORK_FIRMWARE_TEST_FILE") { fs::create_dir_all(dir.path().join("downloads")).unwrap();fs::copy(source,dir.path().join("downloads/PS3UPDAT-4.93.PUP")).unwrap(); }
         let i=Installation{root:root.clone(),executable:Path::new(&root).join("rpcs3.exe").to_string_lossy().into(),..Default::default()};
+        crate::model::atomic_text(&Path::new(&root).join(".patchwork-firmware-incomplete"),"Isolated integration test reinstall",false).unwrap();
         ensure_firmware(dir.path(),&i,|s|println!("{s}"),None).unwrap();
         assert!(firmware_present(&i).unwrap());
+        let bad=dir.path().join("invalid.pkg");let mut bytes=[0u8;128];bytes[..4].copy_from_slice(b"\x7fPKG");bytes[6..8].copy_from_slice(&[0,1]);bytes[24..32].copy_from_slice(&128u64.to_be_bytes());bytes[55..64].copy_from_slice(b"NPUA80662");fs::write(&bad,bytes).unwrap();
+        assert!(run_installer(&i,"--installpkg",&bad).is_err());
+        let installed=Path::new(&root).join("dev_hdd0/game/NPUA80662");
+        assert!(!installed.join("USRDIR/EBOOT.BIN").exists());
+        assert!(installed_game(&crate::model::Game{id:"lbp2".into(),..Default::default()},&installed,"NPUA80662",&Default::default()).is_err());
     }
 
     #[test] fn completion_requires_fresh_explicit_evidence() {

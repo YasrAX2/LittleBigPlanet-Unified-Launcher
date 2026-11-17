@@ -1,3 +1,4 @@
+use crate::model::Config;
 use crate::{
     model::{activity, atomic_json, err, now, Installation, Result, Store},
     release::{self, Release},
@@ -614,6 +615,17 @@ fn install_release(app: &tauri::AppHandle, engine: &str, cancel: &AtomicBool) ->
     }
     Ok(())
 }
+fn relocate_game_paths(c: &mut Config, engine: &str, old: &Path, canonical_old: &Path, new: &Path) {
+    for game in c.games.iter_mut().filter(|g|g.engine==engine) {
+        for value in [&mut game.data,&mut game.update] {
+            if value.is_empty(){continue;}
+            let path=Path::new(value);
+            if let Ok(tail)=path.strip_prefix(canonical_old).or_else(|_|path.strip_prefix(old)) {
+                *value=new.join(tail).to_string_lossy().into();
+            }
+        }
+    }
+}
 pub fn maintenance(s: &Store, engine: &str, action: &str, target: Option<&str>) -> Result<String> {
     let c = s.get();
     let i = c
@@ -632,6 +644,7 @@ pub fn maintenance(s: &Store, engine: &str, action: &str, target: Option<&str>) 
     }
     let m = owned(i)?;
     let root = Path::new(&i.root);
+    let canonical_root=root.canonicalize().map_err(err)?;
     if action == "verify" {
         let mut damaged = vec![];
         for (name, h) in &m.files {
@@ -650,6 +663,7 @@ pub fn maintenance(s: &Store, engine: &str, action: &str, target: Option<&str>) 
         let retained = root.with_file_name(format!("{engine}-uninstalled-{}", now()));
         fs::rename(root, &retained).map_err(err)?;
         if let Err(e) = s.change(|c| {
+            relocate_game_paths(c,engine,root,&canonical_root,&retained);
             c.installations.remove(engine);
             activity(
                 c,
@@ -697,6 +711,7 @@ pub fn maintenance(s: &Store, engine: &str, action: &str, target: Option<&str>) 
         }
         fs::rename(stage.path(), &dest).map_err(err)?;
         s.change(|c| {
+            relocate_game_paths(c,engine,root,&canonical_root,&dest);
             let i = c.installations.get_mut(engine).unwrap();
             i.root = dest.to_string_lossy().into();
             i.executable = dest.join(&m.executable).to_string_lossy().into();
@@ -911,4 +926,12 @@ mod tests {
         .unwrap();
         assert_eq!(fs::read(new.join("save.dat")).unwrap(), b"save");
     }
+    #[test] fn moving_engine_relinks_installed_games_but_not_external_dumps() {
+        let mut c=Config::default();let old=Path::new("old-engine");let new=Path::new("new-engine");
+        c.games[0].data=old.join("dev_hdd0/game/NPUA98148").to_string_lossy().into();
+        c.games[1].data="external-disc".into();
+        relocate_game_paths(&mut c,"rpcs3",old,old,new);
+        assert_eq!(Path::new(&c.games[0].data),new.join("dev_hdd0/game/NPUA98148"));assert_eq!(c.games[1].data,"external-disc");
+    }
+
 }

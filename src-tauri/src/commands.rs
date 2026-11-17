@@ -129,7 +129,10 @@ pub fn import_data(
         let root = Path::new(&i.root).canonicalize().map_err(err)?;
         let data = Path::new(&r.path);
         if data.starts_with(&root) || root.starts_with(data) {
-            return Err("Game data and executable installations must use separate folders.".into());
+            let title=r.title_id.as_bytes();
+            let safe_title=title.len()==9 && title[..4].iter().all(u8::is_ascii_uppercase) && title[4..].iter().all(u8::is_ascii_digit);
+            let installed=if i.engine=="rpcs3" && id!="lbp3" && safe_title { crate::ps3::root(i)?.join("dev_hdd0/game").join(&r.title_id).canonicalize().ok() }else{None};
+            if installed.as_deref()!=Some(data) { return Err("Keep standalone game dumps separate from engines, or choose the exact installed RPCS3 game folder.".into()); }
         }
     }
     if !r.valid {
