@@ -1,3 +1,11 @@
+# Version 1.4.0 test-build verification
+
+17 November 2026: 9 frontend, 32 Rust and 8 Python tests pass (49 total). The production frontend builds. Coverage includes opt-in mode validation, isolated/offline environment creation, inherited credential removal, prepared-image site checking, stopping failed research hooks and preserving normal settings. Typography choices persist and reject unknown values.
+
+The official LBPPC 0.1.5 ZIP was downloaded and verified against its GitHub SHA-256. A packaged --script smoke test ran the integration through the official frozen Python executable and reached run.py, which rejected the deliberately missing game as expected. No real game was booted. Rendering rate, game speed, motion and final desktop appearance remain unverified. See [native testing](NATIVE-TESTING.md).
+
+---
+
 # Version 1.3.0 verification
 
 17 November 2026: 8 frontend tests and 30 Rust tests pass. Coverage includes unsupported FPS validation, legacy defaults, preservation of LBPPC account/control fields while synchronizing JSON/INI, RPCS3 custom/global profile merging and preservation of original files and Vblank timing.

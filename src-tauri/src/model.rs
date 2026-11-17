@@ -74,6 +74,7 @@ pub struct Config {
     pub panel_opacity: u32,
     pub reduced_motion: bool,
     pub text_scale: u32,
+    pub typography: String,
     pub controller: bool,
     pub onboarding: bool,
     pub install_root: String,
@@ -93,6 +94,7 @@ impl Default for Config {
             panel_opacity: 65,
             reduced_motion: false,
             text_scale: 100,
+            typography: "current".into(),
             controller: true,
             onboarding: false,
             install_root: String::new(),
@@ -167,6 +169,7 @@ pub fn valid_artwork(name: &str, id: &str) -> bool {
     name.is_empty() || name == format!("{id}.png") || name == format!("{id}.jpg")
 }
 pub fn validate_config(c: &Config) -> Result<()> {
+    if !["current","wiki"].contains(&c.typography.as_str()) { return Err("Unknown typography choice.".into()); }
     if c.schema != 1
         || c.games.len() != 3
         || !["day", "night", "system"].contains(&c.theme.as_str())
@@ -296,6 +299,16 @@ mod appearance_tests {
         assert!(store.change(|c|{c.games[2].video.enabled=true;c.games[2].video.target_fps=120;Ok(())}).is_err());
         let saved=Store::open(temp.path().into()).unwrap().get();
         assert_eq!(saved.games[0].video.target_fps,120);assert!(!saved.games[2].video.enabled);
+    }
+
+    #[test]
+    fn typography_persists_and_rejects_unknown_choice() {
+        let dir=tempfile::tempdir().unwrap();let store=Store::open(dir.path().into()).unwrap();
+        assert_eq!(store.get().typography,"current");
+        store.change(|c|{c.typography="wiki".into();Ok(())}).unwrap();
+        assert_eq!(Store::open(dir.path().into()).unwrap().get().typography,"wiki");
+        assert!(store.change(|c|{c.typography="unknown".into();Ok(())}).is_err());
+        assert_eq!(store.get().typography,"wiki");
     }
 
 }

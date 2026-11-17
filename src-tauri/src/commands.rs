@@ -46,6 +46,7 @@ pub fn snapshot(s: tauri::State<Store>) -> Value {
 #[tauri::command]
 pub fn preferences(s: tauri::State<Store>, changes: Value) -> Result<Config> {
     s.change(|c| {
+        if let Some(v) = changes.get("typography").and_then(Value::as_str) { c.typography=v.into(); }
         if let Some(v) = changes.get("theme").and_then(Value::as_str) {
             c.theme = v.into()
         }
@@ -467,7 +468,7 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
         if !check.valid {
             return Err(check.messages.join("\n"));
         }
-        if g.engine == "lbppc" {
+        if g.engine == "lbppc" && !g.video.native_test() {
             sync_lbppc(i, &g)?;
         }
     }
@@ -476,6 +477,8 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
         let profile=crate::video::rpcs3_profile(&s.dir,i,&g)?;
         args.splice(0..0,["--config".into(),profile.to_string_lossy().into()]);
     }
+    if !settings && g.video.native_test() { args=crate::video::native_test_args(&s.dir,i,&g)?; }
+    let native_test=!settings&&g.video.native_test();
     let mut child = Command::new(&i.executable)
         .args(args)
         .current_dir(&i.root)
@@ -494,7 +497,11 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
         loop {
             std::thread::sleep(std::time::Duration::from_secs(1));
             let stopped = match child.try_wait() {
-                Ok(Some(_)) | Err(_) => true,
+                Ok(Some(status)) => {
+                    if native_test && !status.success() { let _=app.state::<Store>().change(|c|{activity(c,"Native rendering test stopped with an error. Open test logs and saves on the game page.");Ok(())}); }
+                    true
+                },
+                Err(_) => true,
                 _ => false,
             };
             if !settings && (last.elapsed().as_secs() >= 15 || stopped) {
@@ -522,6 +529,12 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
 pub fn open_location(s: tauri::State<Store>, kind: String, id: Option<String>) -> Result<()> {
     let c = s.get();
     let p = match kind.as_str() {
+        "nativeTest" => {
+            let g=c.games.iter().find(|g|Some(&g.id)==id.as_ref()).ok_or("Missing game")?;
+            if g.id!="lbp3" || ![60,120].contains(&g.video.target_fps) { return Err("Choose a native test target first.".into()); }
+            let path=s.dir.join("native-tests").join(g.video.target_fps.to_string());
+            download::no_links(&path)?;fs::create_dir_all(&path).map_err(err)?;path
+        },
         "config" => s.dir.clone(),
         "installRoot" => PathBuf::from(c.install_root),
         "engine" => PathBuf::from(

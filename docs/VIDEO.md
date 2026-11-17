@@ -1,3 +1,11 @@
+# Version 1.4.0 experimental addition
+
+The LBP3 page now separates Standard mode from opt-in **Native rendering - experimental test** with 60/120 targets and frame generation off. The physics/world update stays at 30 Hz. These are unverified research profiles, not a completed native 60/120 game simulation implementation. See [setup, limits and testing](NATIVE-TESTING.md).
+
+Settings also offers **Current style** and **LBP Wiki - Rubik, bold headings**. Both use the already licensed, bundled Rubik family. The wiki preset uses heavier headings; it does not copy a proprietary game font. Fandom documents [Rubik as its default heading family](https://community.fandom.com/wiki/Help:Theme_Designer).
+
+---
+
 # Video settings
 
 Version 1.3.0. Checked against upstream source on 17 November 2026.

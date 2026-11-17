@@ -11,3 +11,11 @@ it('offers genuine RPCS3 caps and explains the patch requirement',()=>{
  const html=renderToStaticMarkup(<VideoSettings game={game('rpcs3')} locked={false} onChange={()=>{}}/>);
  expect(html).toContain('120 FPS cap');expect(html).not.toContain('value="120" disabled');expect(html).toContain('does not unlock a 30 FPS game');
 });
+
+it('offers 60/120 native tests separately from standard generated frames',()=>{
+ const g=game('lbppc');g.video={...g.video!,rendering:'native-test',targetFps:120};
+ const html=renderToStaticMarkup(<VideoSettings game={g} locked={false} onChange={()=>{}}/>);
+ expect(html).toContain('120 FPS - native rendering test');expect(html).not.toContain('value="120" disabled');
+ expect(html).toContain('frame generation is OFF');expect(html).toContain('Physics stays at 30 Hz');expect(html).toContain('separate saves');
+ expect(html).not.toContain('DLSS - GeForce');
+});

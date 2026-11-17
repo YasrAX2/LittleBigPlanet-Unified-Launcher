@@ -18,9 +18,13 @@ Installed games can be launched without release checks succeeding. Engine online
 
 When you press Play, the LBPPC adapter updates the engine's local game paths. Optional video overrides also update selected video fields in `user/launcher.json` and `lbppc.ini`, preserving other fields and making local backups. Existing engine account fields remain in those files and their backups; the launcher does not send them to its developer. RPCS3 video overrides generate a separate launcher-owned profile from existing local settings. Treat engine folders and their backups as private.
 
+## Experimental native rendering profiles
+
+The optional native tests run offline through the official engine's script interface. Separate native-tests/60 and native-tests/120 folders hold test saves, prepared cache, graphics settings and local engine logs. Existing engine accounts are not loaded. Logs can contain details from your local engine; inspect them before sharing. Nothing is automatically sent to the launcher developer.
+
 ## Remove your local data
 
-Settings provides an **Open launcher settings folder** button. Close the launcher before deleting `config.json`, `config.backup.json`, `art`, `video`, cached requirements/release metadata or launcher download records. This resets preferences and removes local launcher copies of images. The **Remove local picture** and **Reset artwork** buttons unlink images; they do not securely erase stored copies or backups.
+Settings provides an **Open launcher settings folder** button. Close the launcher before deleting `config.json`, `config.backup.json`, `art`, `video`, `native-tests`, cached requirements/release metadata or launcher download records. This resets preferences and removes local launcher copies of images. The **Remove local picture** and **Reset artwork** buttons unlink images; they do not securely erase stored copies or backups.
 
 Do not delete the whole application folder blindly: its `engines` folder can contain installed engines, accounts and saves. Game data in other folders is not removed when launcher preferences are reset. You control separately exported backups, retained engine backups and any copies you shared. Standard deletion does not guarantee secure erasure.
 

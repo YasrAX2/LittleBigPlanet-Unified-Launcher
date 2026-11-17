@@ -16,3 +16,7 @@ config.json
 config.backup.json
 *.pem
 *.key
+
+# Python test caches can contain local absolute paths.
+__pycache__/
+*.pyc

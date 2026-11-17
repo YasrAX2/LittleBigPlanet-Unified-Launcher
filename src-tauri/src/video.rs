@@ -13,11 +13,14 @@ pub struct VideoSettings {
     pub frame_generation: String,
     pub upscaling: String,
     pub resolution_scale: u32,
+    #[serde(skip_serializing_if="is_standard_rendering")]
+    pub rendering: String,
 }
+fn is_standard_rendering(value: &str) -> bool { value=="standard" }
 impl Default for VideoSettings {
     fn default() -> Self { Self {
         enabled: false, resolution: "1920x1080".into(), display: "borderless".into(),
-        target_fps: 0, frame_generation: "fsr3".into(), upscaling: "off".into(), resolution_scale: 100,
+        rendering: "standard".into(), target_fps: 0, frame_generation: "fsr3".into(), upscaling: "off".into(), resolution_scale: 100,
     } }
 }
 impl VideoSettings {
@@ -27,17 +30,22 @@ impl VideoSettings {
             || ![0,30,60,120].contains(&self.target_fps)
             || !["fsr3","dlss"].contains(&self.frame_generation.as_str())
             || !["off","fsr1"].contains(&self.upscaling.as_str())
+            || !["standard","native-test"].contains(&self.rendering.as_str())
             || ![100,150,200,300].contains(&self.resolution_scale) {
             return Err("Unsupported video setting.".into());
         }
-        if self.enabled && engine=="lbppc" && self.target_fps==120 {
+        if self.enabled && engine=="lbppc" && self.rendering=="standard" && self.target_fps==120 {
             return Err("LBPPC currently supports 30 native FPS or 60 with frame generation. 120 FPS is not implemented by that engine.".into());
+        }
+        if self.enabled && self.rendering=="native-test" && (engine!="lbppc" || ![60,120].contains(&self.target_fps)) {
+            return Err("Native rendering tests require LBPPC and a 60 or 120 FPS target.".into());
         }
         if self.enabled && !["rpcs3","lbppc"].contains(&engine) {
             return Err("Video overrides are available only for verified LBPPC and RPCS3 adapters.".into());
         }
         Ok(())
     }
+    pub fn native_test(&self) -> bool { self.enabled && self.rendering=="native-test" }
     pub fn frame_gen(&self) -> Option<&str> {
         match self.target_fps { 30=>Some("off"),60=>Some(&self.frame_generation),_=>None }
     }
@@ -45,7 +53,7 @@ impl VideoSettings {
 
 pub fn patch_lbppc(data: &mut Value, video: &VideoSettings) -> Result<()> {
     video.validate("lbppc")?;
-    if !video.enabled { return Ok(()); }
+    if !video.enabled || video.native_test() { return Ok(()); }
     let map=data.as_object_mut().ok_or("Invalid LBPPC settings document.")?;
     map.insert("resolution".into(),json!(video.resolution));
     map.insert("display".into(),json!(video.display));
@@ -111,6 +119,32 @@ pub fn rpcs3_profile(dir: &Path, installation: &Installation, game: &Game) -> Re
     Ok(output)
 }
 
+// Official 0.1.5 release assets; unknown engines cannot run hard-coded research hooks.
+pub fn native_test_args(dir: &Path, installation: &Installation, game: &Game) -> Result<Vec<String>> {
+    game.video.validate(&game.engine)?;
+    if !game.video.native_test() || game.id!="lbp3" || !["CUSA00473","CUSA00063"].contains(&game.title_id.as_str()) || !["1.28","01.28"].contains(&game.version.as_str()) {
+        return Err("Native tests require a verified LBP3 US/Europe 1.28 game.".into());
+    }
+    let root=Path::new(&installation.root);
+    if Path::new(&installation.executable).canonicalize().map_err(err)?!=root.join("LBPPC.exe").canonicalize().map_err(err)? { return Err("Import the official LBPPC.exe for native tests.".into()); }
+    for (name,expected) in [
+        ("LBPPC.exe","e3f2da1b3a4799fbec95784271c37a1aa2b1949845298d4ccf27795668c14d93"),
+        ("run.py","441c699f3e1b05ca155d3ab88206f008fcf76083500fc421bf44fffb2cb58671"),
+        ("bin/LBPPC-Game.exe","dfa36d62c1d440c03f81581e41af61bce3360c0bc75fd5a434d98fa562d2a8d1"),
+    ] {
+        let path=root.join(name); download::no_links(&path)?;
+        if fs::metadata(&path).map_err(err)?.len()>64*1024*1024 || download::hash(&path)?!=expected {
+            return Err("Native tests require the unmodified official LBPPC 0.1.5 Windows release. Other builds remain usable in Standard mode.".into());
+        }
+    }
+    let test_dir=dir.join("native-tests").join(game.video.target_fps.to_string());
+    download::no_links(&test_dir)?;
+    fs::create_dir_all(&test_dir).map_err(err)?;
+    let helper=dir.join("native-tests/lbppc_native.py");
+    atomic_text(&helper,include_str!("../experiments/lbppc_native.py"),false)?;
+    Ok(vec!["--script".into(),helper.to_string_lossy().into(),installation.root.clone(),test_dir.to_string_lossy().into(),game.video.target_fps.to_string(),game.data.clone(),game.update.clone(),game.video.resolution.clone(),game.video.display.clone(),game.video.upscaling.clone()])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -158,6 +192,16 @@ mod tests {
         assert_eq!(generated["Video"]["Renderer"].as_str(),Some("Vulkan"));
         assert_eq!(generated["Video"]["Write Color Buffers"].as_bool(),Some(true));
         assert_eq!(generated["Core"]["SPU Block Size"].as_str(),Some("Safe"));
+    }
+
+    #[test]
+    fn native_tests_are_opt_in_and_cannot_advertise_standard_120() {
+        let v=VideoSettings{enabled:true,rendering:"native-test".into(),target_fps:120,..Default::default()};
+        assert!(v.validate("lbppc").is_ok());assert!(v.native_test());assert!(v.validate("rpcs3").is_err());
+        assert!(VideoSettings{target_fps:30,..v.clone()}.validate("lbppc").is_err());
+        assert!(VideoSettings{rendering:"standard".into(),..v.clone()}.validate("lbppc").is_err());
+        let original=json!({"password_protected":"private","frame_gen":"dlss"});let mut data=original.clone();
+        patch_lbppc(&mut data,&v).unwrap();assert_eq!(data,original);
     }
 
 }

@@ -2,7 +2,13 @@
 
 **LittleBigPlanet Unified Launcher** for Windows. Created by **yasrax2**.
 
-An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.3.0 adds per-game video settings. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds contain no game artwork, game data, firmware, keys or music.
+An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.4.0 is a prerelease adding experimental native-rendering targets and a selectable LBP Wiki typography preset. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds contain no game artwork, game data, firmware, keys or music.
+
+## Experimental tests
+
+[1.4.0 test release](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.4.0) offers opt-in 60/120 native rendering requests using existing LBPPC research hooks, with frame generation off and separate offline saves. Physics remains 30 Hz. Motion can still step at 30 Hz, and actual FPS/game speed are unverified. This is not stable native 60/120 simulation support. [Test instructions and limits](docs/NATIVE-TESTING.md).
+
+In Settings, choose Current style or LBP Wiki (Rubik with heavier headings). The existing licensed font is reused.
 
 ## Download
 
