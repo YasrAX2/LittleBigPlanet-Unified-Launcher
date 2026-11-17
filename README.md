@@ -1,5 +1,7 @@
 # Patchwork Pod
 
+**LBP3 requires the PS4 version.** Its LBPPC option needs complete extracted PS4 game files and the matching 1.28 update. A PS3 copy or PS3 PKG of LBP3 cannot be imported into this launcher. PS4 PKGs are not imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
+
 **LittleBigPlanet Unified Launcher** for Windows. Created by **yasrax2**.
 
 An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.3.0 adds per-game video settings. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds include the selected default background, covers and Popit icons. No game data, firmware, keys or music are bundled.
