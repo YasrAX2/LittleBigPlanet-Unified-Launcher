@@ -1,0 +1,130 @@
+[
+  {
+    "check": "Responsive navigation and edge-filled covers 960x640",
+    "passed": true
+  },
+  {
+    "check": "Responsive navigation and edge-filled covers 1199x800",
+    "passed": true
+  },
+  {
+    "check": "Responsive navigation and edge-filled covers 1200x800",
+    "passed": true
+  },
+  {
+    "check": "Responsive navigation and edge-filled covers 1280x720",
+    "passed": true
+  },
+  {
+    "check": "Responsive navigation and edge-filled covers 1920x1080",
+    "passed": true
+  },
+  {
+    "check": "Responsive navigation and edge-filled covers 2560x1440",
+    "passed": true
+  },
+  {
+    "check": "Escape and expansion close the compact modal without leaving a backdrop",
+    "passed": true
+  },
+  {
+    "check": "Black & green reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Red & burgundy reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Purple & black reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Pink & cream reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Blue & grey reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Olive & maroon reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Amber & mint reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Violet & green reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Peach & lavender reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Cyan & yellow reference colors and icon",
+    "violations": []
+  },
+  {
+    "check": "Reference color and opacity persist after reload",
+    "passed": true
+  },
+  {
+    "check": "day Home",
+    "violations": []
+  },
+  {
+    "check": "day Library",
+    "violations": []
+  },
+  {
+    "check": "day Downloads",
+    "violations": []
+  },
+  {
+    "check": "day Game files",
+    "violations": []
+  },
+  {
+    "check": "day Settings",
+    "violations": []
+  },
+  {
+    "check": "day About",
+    "violations": []
+  },
+  {
+    "check": "night Home",
+    "violations": []
+  },
+  {
+    "check": "night Library",
+    "violations": []
+  },
+  {
+    "check": "night Downloads",
+    "violations": []
+  },
+  {
+    "check": "night Game files",
+    "violations": []
+  },
+  {
+    "check": "night Settings",
+    "violations": []
+  },
+  {
+    "check": "night About",
+    "violations": []
+  },
+  {
+    "check": "Text 150 percent at 960",
+    "violations": []
+  },
+  {
+    "check": "Text 150 percent at 1280",
+    "violations": []
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Patchwork Pod",
+  "version": "1.2.1",
+  "identifier": "com.patchworkpod.launcher",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "LittleBigPlanet Unified Launcher · Patchwork Pod",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "backgroundColor": "#080b0a"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src ipc: http://ipc.localhost; script-src 'self'; object-src 'none'; base-uri 'self'; frame-src 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "shortDescription": "LittleBigPlanet launcher with customizable glass Popit menus",
+    "category": "Game",
+    "copyright": "© 2026 yasrax2 and Patchwork Pod contributors. Unofficial fan project.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false
+      }
+    },
+    "resources": {
+      "../LICENSE": "LICENSE",
+      "../THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md",
+      "../THIRD-PARTY-LICENSES.txt": "THIRD-PARTY-LICENSES.txt",
+      "../docs/IMAGE-SOURCES.md": "IMAGE-SOURCES.md"
+    }
+  }
+}

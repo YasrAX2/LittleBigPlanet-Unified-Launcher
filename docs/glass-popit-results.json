@@ -1,0 +1,130 @@
+[
+  {
+    "check": "Navigation starts closed",
+    "passed": true
+  },
+  {
+    "check": "Hamburger opens; Escape closes",
+    "passed": true
+  },
+  {
+    "check": "Full covers and layout 1280x720",
+    "passed": true
+  },
+  {
+    "check": "Full covers and layout 1920x1080",
+    "passed": true
+  },
+  {
+    "check": "Full covers and layout 2560x1440",
+    "passed": true
+  },
+  {
+    "check": "Full covers and layout 960x640",
+    "passed": true
+  },
+  {
+    "check": "Cool Island palette",
+    "violations": []
+  },
+  {
+    "check": "Ocean palette",
+    "violations": []
+  },
+  {
+    "check": "Grape palette",
+    "violations": []
+  },
+  {
+    "check": "Berry palette",
+    "violations": []
+  },
+  {
+    "check": "Sunshine palette",
+    "violations": []
+  },
+  {
+    "check": "Sand palette",
+    "violations": []
+  },
+  {
+    "check": "Mint palette",
+    "violations": []
+  },
+  {
+    "check": "Midnight palette",
+    "violations": []
+  },
+  {
+    "check": "Color and opacity persist after reload",
+    "passed": true
+  },
+  {
+    "theme": "day",
+    "page": "Home",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Library",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Downloads",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Game files",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "Settings",
+    "violations": []
+  },
+  {
+    "theme": "day",
+    "page": "About",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Home",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Library",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Downloads",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Game files",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "Settings",
+    "violations": []
+  },
+  {
+    "theme": "night",
+    "page": "About",
+    "violations": []
+  },
+  {
+    "check": "Favorites, library filters and cover-based game pages",
+    "passed": true
+  },
+  {
+    "check": "150 percent text and menu navigation",
+    "passed": true
+  }
+]

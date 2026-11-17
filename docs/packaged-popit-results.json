@@ -1,0 +1,8 @@
+{
+  "packagedOrigin": "http://tauri.localhost/",
+  "freshAppearance": "black-green",
+  "images": true,
+  "font": true,
+  "persistence": true,
+  "offline": true
+}

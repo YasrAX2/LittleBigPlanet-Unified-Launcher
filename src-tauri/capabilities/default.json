@@ -1,0 +1,1 @@
+{"identifier":"default","description":"Main window core events only; filesystem and process operations are validated in Rust.","windows":["main"],"permissions":["core:default"]}

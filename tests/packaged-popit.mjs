@@ -1,0 +1,21 @@
+import {chromium} from '@playwright/test';
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const browser=await chromium.connectOverCDP('http://127.0.0.1:9224');
+const page=browser.contexts()[0].pages()[0];
+await page.waitForSelector('.world-bubbles');
+assert.equal(new URL(page.url()).hostname,'tauri.localhost');
+const snapshot=await page.evaluate(()=>window.__TAURI_INTERNALS__.invoke('snapshot'));
+assert.ok(await page.getByText('Created by yasrax2',{exact:false}).isVisible());
+await page.locator('.appearance-shortcut').click();
+assert.equal(await page.getByRole('radio').count(),2);
+const slider=page.getByRole('slider',{name:'Background blur',exact:true});
+assert.equal(await slider.getAttribute('min'),'0');assert.equal(await slider.getAttribute('max'),'24');
+if(snapshot.config.background==='picture'&&snapshot.backgroundArtwork){
+ assert.match(snapshot.backgroundArtwork,/^data:image\/(png|jpeg);base64,/);
+ assert.ok(await page.locator('.pod-backdrop img').evaluate(e=>e.complete&&e.naturalWidth>0));
+ assert.ok((await page.locator('.pod-backdrop img').evaluate(e=>getComputedStyle(e).filter)).includes(`blur(${snapshot.config.backgroundBlur}px)`));
+}else assert.equal(await page.locator('.pod-backdrop img').count(),0);
+const result={version:'1.2.1',packagedOrigin:page.url(),creatorCredit:true,backgroundChoices:2,blurRange:[0,24],backgroundIsLocal:!snapshot.backgroundArtwork||snapshot.backgroundArtwork.startsWith('data:image/')};
+await fs.writeFile('docs/packaged-popit-results.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));await browser.close();

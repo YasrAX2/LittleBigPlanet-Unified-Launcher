@@ -1,0 +1,30 @@
+[package]
+name = "patchwork-pod"
+version = "1.2.1"
+description = "An unofficial, handcrafted LittleBigPlanet unified launcher"
+authors = ["yasrax2", "Patchwork Pod contributors"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.93"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+sha2 = "0.10"
+zip = { version = "9.6.1", default-features = false, features = ["deflate"] }
+sevenz-rust = { package = "sevenz-rust2", version = "0.25" }
+rfd = "0.15"
+base64 = "0.22"
+tempfile = "3"
+serde_yaml = { package = "yaml_serde", version = "0.10.7" }
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 1
