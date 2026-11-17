@@ -10,7 +10,7 @@ This launcher was independently written. No LBPPC, RPCS3, LittleBigRecomp or Rec
 - Tauri and its plugins: MIT / Apache-2.0.
 - React and React DOM: MIT.
 - Lucide: ISC, icons by Lucide contributors.
-- Fredoka and Nunito fonts: SIL Open Font License 1.1. Full notices accompany fonts under `public/fonts/`.
+- Rubik (current UI), Fredoka and Nunito (historical) fonts: SIL Open Font License 1.1. Full notices accompany fonts under `public/fonts/`.
 - Rust dependencies retain their own licenses in the Cargo registry. Exact versions are pinned in Cargo.lock. JavaScript versions are pinned in package-lock.json.
 
-Version 1.1 uses real LittleBigPlanet gameplay and Pod screenshots at the user's request. These images remain copyrighted by their respective owners and are excluded from the MIT license. Sources and rights notes are in docs/IMAGE-SOURCES.md. The app icon is a simple independently drawn bubble symbol. Version 1.0 UI captures are retained as historical documentation.
+Version 1.2 uses game covers and a Pod screenshot at the user's request. Version 1.1 used gameplay screenshots. These images remain copyrighted by their respective owners and are excluded from the MIT license. Sources and rights notes are in docs/IMAGE-SOURCES.md. The app icon is a simple independently drawn bubble symbol. Version 1.0 UI captures are retained as historical documentation.

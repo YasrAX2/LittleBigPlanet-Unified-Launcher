@@ -9,3 +9,5 @@ Known limits: no actual game playthrough, firmware, online accounts or physical 
 Build prerequisites were isolated under the task workspace after automatic review rejected a system-wide Build Tools installer. Rust is under the adjacent toolchain directory; Microsoft compiler/SDK files are under adjacent msvc. These are development tools and are excluded from source and release archives. GitHub CLI authentication is managed by the system credential store; no tokens are in this repository.
 
 Version 1.1 replaces the illustrated scenes with real screenshots and Popit bubble menus. See REDESIGN-1.1.md for current design and test results. Version 1.0 details above remain the backend baseline.
+
+Version 1.2 replaces the fixed menu with a hamburger dialog, gameplay selectors with covers, and opaque panels with selectable glass colors and opacity. Rubik is used throughout. See REDESIGN-1.2.md and glass-popit-results.json.

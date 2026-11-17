@@ -1,6 +1,6 @@
 {
   "name": "littlebigplanet-unified-launcher",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:ui": "playwright test"
+    "test:ui": "node tests/glass-popit.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.0",

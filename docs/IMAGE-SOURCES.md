@@ -1,5 +1,19 @@
 # Gameplay image sources
 
+## Version 1.2 cover art
+
+The current game selectors and detail pages use covers, not gameplay screenshots:
+
+| File | Source |
+| --- | --- |
+| public/covers/lbp1.jpg | LittleBigPlanet PS3 front cover from Power Up Gaming: https://www.powerupgaming.ca/products/ps3-little-big-planet |
+| public/covers/lbp2.webp | LittleBigPlanet 2 front cover from MobyGames: https://www.mobygames.com/game/52419/littlebigplanet-2/ ; image https://cdn.mobygames.com/4421db9e-ab9e-11ed-8bb9-02420a000197.webp |
+| public/covers/lbp3.jpg | LittleBigPlanet 3 PS4 cover from Vandal: https://vandal.elespanol.com/juegos/ps4/littlebigplanet-3/24750 |
+
+These are copyrighted cover/packaging images identifying their respective games; they are excluded from the MIT code license. No open-content license is claimed. The real Pod screenshot remains the backdrop. Rubik is from Google Fonts under the SIL Open Font License; its full notice accompanies the application.
+
+## Version 1.1 image record
+
 The 1.1 interface uses real game screenshots found through image search. No image-generation service was used. These images are credited to their respective creators and rights holders; they are not original launcher artwork and are not covered by this repository's MIT license.
 
 | Local file | Content | Source |
