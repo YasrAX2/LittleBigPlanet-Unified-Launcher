@@ -50,3 +50,5 @@
 .video-fields{border:0;padding:0;margin:0;min-width:0}.video-fields:disabled{opacity:.65}.video-panel .field{margin:16px 0}.video-panel{scroll-margin-top:24px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 :root[data-typography=wiki] h1,:root[data-typography=wiki] h2,:root[data-typography=wiki] h3{font-weight:800}:root[data-typography=wiki] .brand strong{font-weight:800}:root[data-typography=wiki] p{line-height:1.75}
+
+.platform-requirement{font-size:.82rem;font-weight:600;margin:8px 0;color:var(--text)}

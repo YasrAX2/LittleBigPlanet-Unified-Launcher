@@ -1,5 +1,9 @@
 # Questions and answers
 
+### Can I use the PS3 version of LittleBigPlanet 3?
+
+No. This launcher currently supports LBP3 through LBPPC, which requires the PS4 edition with its matching 1.28 update extracted to folders. A PS3 LBP3 PKG is incompatible with this option. LBP3 via RPCS3 is not implemented in this launcher.
+
 [Complete guide](USAGE.md) · [Troubleshooting](TROUBLESHOOTING.md) · [Project](../README.md)
 
 ### Can I put a PKG in the game-folder picker?

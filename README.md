@@ -3,6 +3,8 @@
 <p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong><br>Developed with AI assistance</p>
 <p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.5.0">Try 1.5.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
 
+**LBP3 requires the PS4 version.** Its LBPPC option needs complete extracted PS4 game files and the matching 1.28 update. A PS3 copy or PS3 PKG of LBP3 cannot be imported into this launcher. PS4 PKGs are not imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
+
 Free, unofficial Windows launcher for LittleBigPlanet 1, 2 and 3. Link your games, install their engines and customize your library with translucent Popit-style menus, colors, local covers and backgrounds.
 
 ## Start here
