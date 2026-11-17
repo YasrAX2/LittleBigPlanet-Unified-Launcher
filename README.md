@@ -1,6 +1,6 @@
 <p align="center"><img src="public/icon.svg" width="88" alt="Patchwork Pod icon"></p>
 <h1 align="center">Patchwork Pod</h1>
-<p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong></p>
+<p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong><br>Developed with AI assistance</p>
 <p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.5.0">Try 1.5.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
 
 Free, unofficial Windows launcher for LittleBigPlanet 1, 2 and 3. Link your games, install their engines and customize your library with translucent Popit-style menus, colors, local covers and backgrounds.
@@ -69,6 +69,15 @@ npm run tauri -- build --bundles nsis
 Development: `npm run tauri -- dev`. The frontend requires the Tauri backend. [Upstream research](docs/UPSTREAM.md).
 
 </details>
+
+## Contributors
+
+| Contributor | Credit |
+| --- | --- |
+| **yasrax2** | Project creator; feature ideas, feature design and project direction. |
+| **shawarma1m8ly** | Suggested the initial idea for this LittleBigPlanet PC launcher. |
+
+Development was assisted by AI, including code implementation, debugging, research and documentation, under **yasrax2**'s direction. [Full contributor credits](CONTRIBUTORS.md).
 
 ## Credits
 
