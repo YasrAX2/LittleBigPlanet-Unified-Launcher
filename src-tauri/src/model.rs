@@ -67,6 +67,8 @@ pub struct Config {
     pub theme: String,
     pub palette: String,
     pub background: String,
+    pub background_blur: u32,
+    pub background_artwork: String,
     pub panel_opacity: u32,
     pub reduced_motion: bool,
     pub text_scale: u32,
@@ -83,7 +85,9 @@ impl Default for Config {
             schema: 1,
             theme: "day".into(),
             palette: "black-green".into(),
-            background: "picture".into(),
+            background: "color".into(),
+            background_blur: 8,
+            background_artwork: String::new(),
             panel_opacity: 65,
             reduced_motion: false,
             text_scale: 100,
@@ -156,14 +160,20 @@ pub fn migrate_appearance(c: &mut Config) {
         c.palette = "black-green".into();
     }
 }
+pub const PALETTE_IDS: [&str; 10] = ["black-green", "red-burgundy", "purple-black", "pink-cream", "blue-grey", "olive-maroon", "amber-mint", "violet-green", "peach-lavender", "cyan-yellow"];
+pub fn valid_artwork(name: &str, id: &str) -> bool {
+    name.is_empty() || name == format!("{id}.png") || name == format!("{id}.jpg")
+}
 pub fn validate_config(c: &Config) -> Result<()> {
     if c.schema != 1
         || c.games.len() != 3
         || !["day", "night", "system"].contains(&c.theme.as_str())
         || !["picture", "color"].contains(&c.background.as_str())
+        || c.background_blur > 24
+        || !valid_artwork(&c.background_artwork, "background")
         || !(85..=150).contains(&c.text_scale)
         || !(55..=95).contains(&c.panel_opacity)
-        || !["black-green", "red-burgundy", "purple-black", "pink-cream", "blue-grey", "olive-maroon", "amber-mint", "violet-green", "peach-lavender", "cyan-yellow"].contains(&c.palette.as_str())
+        || !PALETTE_IDS.contains(&c.palette.as_str())
     {
         return Err("Unsupported configuration.".into());
     }
@@ -173,6 +183,7 @@ pub fn validate_config(c: &Config) -> Result<()> {
         }
     }
     for g in &c.games {
+        if !valid_artwork(&g.artwork, &g.id) { return Err("Invalid local artwork name.".into()); }
         if !["lbppc", "rpcs3", "lbprecomp", "replanet"].contains(&g.engine.as_str()) {
             return Err("Unknown game engine.".into());
         }
@@ -222,26 +233,34 @@ mod appearance_tests {
         json.as_object_mut().unwrap().remove("palette");
         json.as_object_mut().unwrap().remove("panelOpacity");
         json.as_object_mut().unwrap().remove("background");
+        json.as_object_mut().unwrap().remove("backgroundBlur");
+        json.as_object_mut().unwrap().remove("backgroundArtwork");
         let old:Config=serde_json::from_value(json).unwrap();
         assert_eq!(old.palette,"black-green");
         assert_eq!(old.panel_opacity,65);
-        assert_eq!(old.background,"picture");
+        assert_eq!(old.background,"color");
+        assert_eq!(old.background_blur,8);
+        assert!(old.background_artwork.is_empty());
         validate_config(&old).unwrap();
     }
     #[test]
     fn appearance_persists_and_rejects_invalid_values() {
         let dir=tempfile::tempdir().unwrap();
         let store=Store::open(dir.path().into()).unwrap();
-        store.change(|c|{c.palette="purple-black".into();c.panel_opacity=65;c.background="color".into();Ok(())}).unwrap();
+        store.change(|c|{c.palette="purple-black".into();c.panel_opacity=65;c.background="color".into();c.background_blur=12;Ok(())}).unwrap();
         let saved=Store::open(dir.path().into()).unwrap().get();
         assert_eq!((saved.palette.as_str(),saved.panel_opacity),("purple-black",65));
         assert_eq!(saved.background,"color");
+        assert_eq!(saved.background_blur,12);
+        assert!(store.change(|c|{c.background_blur=25;Ok(())}).is_err());
+        assert!(store.change(|c|{c.background_artwork="../private.png".into();Ok(())}).is_err());
         assert!(store.change(|c|{c.background="https://invalid.example/image".into();Ok(())}).is_err());
         assert!(store.change(|c|{c.palette="invalid".into();Ok(())}).is_err());
         assert!(store.change(|c|{c.panel_opacity=0;Ok(())}).is_err());
         assert_eq!(store.get().palette,"purple-black");
         assert_eq!(store.get().panel_opacity,65);
         assert_eq!(store.get().background,"color");
+        assert_eq!(store.get().background_blur,12);
         store.change(|c|{c.background="picture".into();Ok(())}).unwrap();
         assert_eq!(Store::open(dir.path().into()).unwrap().get().background,"picture");
     }

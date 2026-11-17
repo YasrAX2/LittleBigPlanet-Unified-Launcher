@@ -49,6 +49,13 @@ pub fn hash(p: &Path) -> Result<String> {
     }
     Ok(format!("{:x}", h.finalize()))
 }
+fn verify_download(p: &Path, expected: Option<&str>) -> Result<()> {
+    let expected = expected.ok_or("The official release provides no SHA-256 checksum. Use the official project to review and import it manually.")?;
+    if expected.len() != 64 || !expected.bytes().all(|b|b.is_ascii_hexdigit()) || !hash(p)?.eq_ignore_ascii_case(expected) {
+        return Err("SHA-256 verification failed. The archive was not installed.".into());
+    }
+    Ok(())
+}
 pub fn safe_relative(name: &str) -> Result<PathBuf> {
     let normalized = name.replace('\\', "/");
     if normalized.is_empty() || normalized.starts_with('/') || normalized.contains(':') {
@@ -122,8 +129,15 @@ pub fn files(root: &Path) -> Result<Vec<PathBuf>> {
     walk(root, &mut out, 0)?;
     Ok(out)
 }
+fn copy_entry(reader: &mut dyn Read, writer: &mut dyn Write, budget: &mut u64) -> Result<()> {
+    let copied = std::io::copy(&mut reader.take(*budget + 1), writer).map_err(err)?;
+    if copied > *budget { return Err("Archive exceeds actual extraction limit.".into()); }
+    *budget -= copied;
+    Ok(())
+}
 pub fn extract(archive: &Path, dest: &Path, cancel: &AtomicBool) -> Result<()> {
     let mut total = 0u64;
+    let mut budget = 8 * 1024 * 1024 * 1024u64;
     let mut count = 0usize;
     let mut names = std::collections::HashSet::new();
     if archive.extension().and_then(|s| s.to_str()) == Some("zip") {
@@ -136,7 +150,7 @@ pub fn extract(archive: &Path, dest: &Path, cancel: &AtomicBool) -> Result<()> {
                 return Err("Cancelled".into());
             }
             let mut e = z.by_index(i).map_err(err)?;
-            let rel = safe_relative(e.name())?;
+            let rel = safe_relative(&e.name().map_err(err)?)?;
             if !names.insert(rel.to_string_lossy().to_lowercase()) {
                 return Err("Duplicate archive path".into());
             }
@@ -160,12 +174,16 @@ pub fn extract(archive: &Path, dest: &Path, cancel: &AtomicBool) -> Result<()> {
                     .create_new(true)
                     .open(p)
                     .map_err(err)?;
-                std::io::copy(&mut e, &mut f).map_err(err)?;
+                copy_entry(&mut e, &mut f, &mut budget)?;
             }
         }
     } else {
-        sevenz_rust::decompress_file_with_extract_fn(archive, dest, |entry, reader, _| {
-            let fail = |s: &str| sevenz_rust::Error::other(s.to_string());
+        let source = fs::File::open(archive).map_err(err)?;
+        // The library takes KiB and applies this cap to header buffers and decoder models.
+        let mut seven = sevenz_rust::ArchiveReader::new_with_memory_limit(source, sevenz_rust::Password::empty(), 256 * 1024).map_err(err)?;
+        seven.set_thread_count(1);
+        seven.for_each_entries(|entry, reader| {
+            let fail = |s: &str| sevenz_rust::Error::Other(s.to_string().into());
             if cancel.load(Ordering::Relaxed) {
                 return Err(fail("Cancelled"));
             }
@@ -185,15 +203,15 @@ pub fn extract(archive: &Path, dest: &Path, cancel: &AtomicBool) -> Result<()> {
             }
             let p = dest.join(rel);
             if entry.is_directory {
-                fs::create_dir_all(&p).map_err(sevenz_rust::Error::io)?
+                fs::create_dir_all(&p).map_err(sevenz_rust::Error::from)?
             } else {
-                fs::create_dir_all(p.parent().unwrap()).map_err(sevenz_rust::Error::io)?;
+                fs::create_dir_all(p.parent().unwrap()).map_err(sevenz_rust::Error::from)?;
                 let mut f = fs::OpenOptions::new()
                     .write(true)
                     .create_new(true)
                     .open(&p)
-                    .map_err(sevenz_rust::Error::io)?;
-                std::io::copy(reader, &mut f).map_err(sevenz_rust::Error::io)?;
+                    .map_err(sevenz_rust::Error::from)?;
+                copy_entry(reader, &mut f, &mut budget).map_err(|e|fail(&e))?;
             }
             Ok(true)
         })
@@ -397,14 +415,7 @@ fn download(
             expected = text.split_whitespace().next().map(str::to_string);
         }
     }
-    if let Some(expected) = expected {
-        if expected.len() != 64
-            || !expected.bytes().all(|b| b.is_ascii_hexdigit())
-            || !hash(&part)?.eq_ignore_ascii_case(&expected)
-        {
-            return Err("SHA-256 verification failed. The archive was not installed.".into());
-        }
-    }
+    verify_download(&part, expected.as_deref())?;
     if finished.exists() {
         fs::remove_file(&finished).map_err(err)?;
     }
@@ -730,6 +741,43 @@ pub fn maintenance(s: &Store, engine: &str, action: &str, target: Option<&str>) 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn download_verification_requires_a_real_matching_checksum() {
+        let file=tempfile::NamedTempFile::new().unwrap();
+        fs::write(file.path(), b"official fixture").unwrap();
+        assert!(verify_download(file.path(),None).is_err());
+        assert!(verify_download(file.path(),Some(&"0".repeat(64))).is_err());
+        assert!(verify_download(file.path(),Some(&hash(file.path()).unwrap())).is_ok());
+    }
+    #[test]
+    fn extraction_bounds_actual_bytes_not_only_declared_sizes() {
+        let mut reader=std::io::Cursor::new(b"four");let mut bytes=vec![];let mut budget=3;
+        assert!(copy_entry(&mut reader,&mut bytes,&mut budget).is_err());
+        assert_eq!(bytes.len(),4);
+    }
+    #[test]
+    fn maintained_sevenz_reader_extracts_valid_archives() {
+        let temp=tempfile::tempdir().unwrap();
+        let source=temp.path().join("fixture.txt");
+        fs::write(&source,b"local test fixture").unwrap();
+        let archive=temp.path().join("fixture.7z");
+        sevenz_rust::compress_to_path(&source,&archive).unwrap();
+        let dest=tempfile::tempdir().unwrap();
+        extract(&archive,dest.path(),&AtomicBool::new(false)).unwrap();
+        assert_eq!(fs::read(dest.path().join("fixture.txt")).unwrap(),b"local test fixture");
+    }
+    #[test]
+    fn sevenz_traversal_never_writes_outside_staging() {
+        let temp=tempfile::tempdir().unwrap();
+        let source=temp.path().join("fixture.txt");fs::write(&source,b"fixture").unwrap();
+        let archive=temp.path().join("traversal.7z");
+        let mut writer=sevenz_rust::ArchiveWriter::create(&archive).unwrap();
+        writer.push_archive_entry(sevenz_rust::ArchiveEntry::from_path(&source,"../outside.txt".into()),Some(fs::File::open(&source).unwrap())).unwrap();
+        writer.finish().unwrap();
+        let dest=tempfile::tempdir_in(temp.path()).unwrap();
+        assert!(extract(&archive,dest.path(),&AtomicBool::new(false)).is_err());
+        assert!(!temp.path().join("outside.txt").exists());
+    }
     #[test]
     fn extraction_rejects_zip_slip_and_extracts_valid_files() {
         let t = tempfile::tempdir().unwrap();

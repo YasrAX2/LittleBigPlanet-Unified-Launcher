@@ -14,3 +14,7 @@
 - **Blank window:** Ensure the Microsoft WebView2 Evergreen Runtime is installed. Development builds also require the local Vite server; release builds do not.
 
 Settings offers a locally saved diagnostics report. Inspect it before voluntarily attaching it to an issue. Never attach game dumps, firmware, private keys, account files or save data.
+
+## No official checksum
+
+Automatic installation refuses a release with no usable official SHA-256 checksum. Review the official project and use Import existing if you independently trust an installation. A checksum mismatch always stops installation.

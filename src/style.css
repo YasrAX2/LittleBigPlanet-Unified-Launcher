@@ -36,9 +36,13 @@
 .palette-preview,.palette-preview img{width:72px;height:96px}.palette-preview>svg{top:30px;left:22px}.palette-grid{grid-template-columns:repeat(3,100px);gap:13px 20px}
 @media(max-width:580px){.palette-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 10px}}
 
-.pod-backdrop img{width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.05);filter:blur(8px) brightness(.48)}
+.pod-backdrop img{width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.05);filter:blur(var(--background-blur,8px)) brightness(.48)}
 .pod-backdrop.backdrop-picture{overflow:hidden;background:#171217}
 .background-picker{margin:25px 0 30px;padding:0;border:0;min-width:0}.background-picker legend{font-size:1.35rem;font-weight:650;margin-bottom:18px}
 .background-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:650px}.background-choice{display:flex;flex-direction:column;gap:12px;padding:12px;border:1px solid #ffffff50;border-radius:17px;cursor:pointer}.background-choice.selected{outline:2px solid var(--theme-accent,#40f6a3);outline-offset:3px}.background-choice:focus-within{outline:3px solid #ffe681;outline-offset:4px}.background-preview{display:block;height:115px;overflow:hidden;border-radius:10px;background:var(--backdrop)}.background-preview img{width:100%;height:100%;object-fit:cover;object-position:70% 40%}.background-label{display:flex;align-items:center;gap:10px;font-size:.85rem;font-weight:550}.background-label input{width:18px;height:18px;margin:0;accent-color:var(--theme-accent,#40f6a3)}.background-choice small{font-size:.73rem;line-height:1.5}.background-choice.selected .background-label{font-weight:650}
 :root[data-light-palette=true] .background-choice{border-color:#10151155}:root[data-light-palette=true] .background-choice small{color:#17221b}
 @media(max-width:580px){.background-options{gap:12px}.background-preview{height:85px}.background-label{font-size:.75rem;align-items:flex-start}}
+
+:root[data-light-palette=true] .background-choice.selected{outline-color:#101511}:root[data-light-palette=true] .background-label input{accent-color:#101511}
+
+.cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:20px;text-align:center;background:#101d17;color:#e5fff1}.cover-placeholder strong{font-size:1.4rem}.cover-placeholder small{font-size:.75rem}.game-hero-art .cover-placeholder strong{font-size:1rem}.picture-preview{display:grid;place-items:center}.background-picker>.actions{margin-top:18px}.palette-swatch{display:block;width:40px;height:44px;border-radius:50%;margin-top:12px}.palette-preview{overflow:visible}

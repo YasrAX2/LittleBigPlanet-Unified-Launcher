@@ -8,3 +8,11 @@ playwright-report/
 .env*
 !*.example
 .DS_Store
+
+# Local QA captures can contain user paths or imported artwork.
+docs/screenshots*/
+local-artwork/
+config.json
+config.backup.json
+*.pem
+*.key

@@ -9,7 +9,7 @@ const results=[];
 const directory='docs/screenshots-v1.2.1';
 await fs.mkdir(directory,{recursive:true});
 await page.waitForSelector('.world-bubbles');await page.reload();await page.waitForSelector('.world-bubbles');
-await invoke('preferences',{changes:{palette:'black-green',background:'picture',panelOpacity:65,textScale:100,theme:'day'}});
+await invoke('preferences',{changes:{palette:'black-green',background:'color',panelOpacity:65,textScale:100,theme:'day'}});
 await page.reload();await page.waitForSelector('.world-bubbles');
 async function navigate(label){
  if(await page.locator('.menu-toggle').isVisible()){
@@ -29,7 +29,7 @@ for(const [width,height]of[[960,640],[1199,800],[1200,800],[1280,720],[1920,1080
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  for(const img of await page.locator('.world-bubbles img').all()){
   assert.ok(await img.evaluate(e=>e.complete&&e.naturalWidth>100));
-  assert.match(await img.getAttribute('src'),/-art\.webp$/);
+  assert.match(await img.getAttribute('src'),/^data:image\//);
   assert.equal(await img.evaluate(e=>getComputedStyle(e).objectFit),'cover');
  }
  await page.screenshot({path:`${directory}/home-${width}.png`,fullPage:true});
@@ -42,7 +42,7 @@ assert.equal(await page.locator('#navigation-menu').isVisible(),false);assert.eq
 results.push({check:'Escape and expansion close the compact modal without leaving a backdrop',passed:true});
 await navigate('Settings');
 assert.equal(await page.getByRole('radio').count(),2);
-assert.ok(await page.locator('.pod-backdrop img').evaluate(e=>e.complete&&getComputedStyle(e).filter.includes('blur(8px)')));
+assert.equal(await page.locator('.pod-backdrop img').count(),0);
 await page.getByRole('radio',{name:/Theme color/}).check();
 assert.equal(await page.locator('.pod-backdrop img').count(),0);
 await page.reload();await page.waitForSelector('.world-bubbles');assert.equal((await invoke('snapshot')).config.background,'color');
@@ -59,14 +59,14 @@ for(const p of [{id:'black-green',name:'Black & green',top:'#080b0a',bottom:'#08
  const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(' ');
  assert.equal(await page.evaluate(()=>document.documentElement.style.getPropertyValue('--glass-top')),rgb(p.top));
  assert.equal(await page.evaluate(()=>document.documentElement.style.getPropertyValue('--glass-bottom')),rgb(p.bottom));
- assert.ok(await button.locator('img').evaluate(e=>e.complete&&e.naturalWidth===84));
+ assert.ok(await button.locator('.palette-preview').isVisible());
  await scan(`${p.name} reference colors and icon`);
 }
 await page.getByRole('button',{name:'Violet & green color',exact:true}).click();
 await page.getByRole('slider',{name:'Panel opacity',exact:true}).fill('75');await page.waitForTimeout(100);
-await page.getByRole('radio',{name:/Sackboy picture/}).check();
+await page.getByRole('radio',{name:/Theme color/}).check();
 await page.reload();await page.waitForSelector('.world-bubbles');
-const snapshot=await invoke('snapshot');assert.equal(snapshot.config.background,'picture');assert.equal(snapshot.config.palette,'violet-green');assert.equal(snapshot.config.panelOpacity,75);
+const snapshot=await invoke('snapshot');assert.equal(snapshot.config.background,'color');assert.equal(snapshot.config.palette,'violet-green');assert.equal(snapshot.config.panelOpacity,75);
 await navigate('Settings');await page.screenshot({path:`${directory}/appearance-violet-green.png`,fullPage:true,mask:[page.locator('.path')],maskColor:'#263e33'});
 results.push({check:'Reference color and opacity persist after reload',passed:true});
 await invoke('preferences',{changes:{palette:'black-green',panelOpacity:65}});
@@ -81,14 +81,14 @@ await navigate('Library');
 for(const title of ['LittleBigPlanet','LittleBigPlanet 2','LittleBigPlanet 3']){
  await page.getByRole('button',{name:`Open ${title}`,exact:true}).click();
  assert.ok(await page.getByRole('heading',{name:title,exact:true,level:1}).isVisible());
- assert.match(await page.locator('.game-hero-art img').getAttribute('src'),/-art\.webp$/);
+ assert.ok(await page.locator('.game-hero-art').isVisible());
  await page.getByRole('button',{name:'Back to library',exact:true}).click();
 }
 await invoke('preferences',{changes:{textScale:150}});await page.reload();await page.waitForSelector('.world-bubbles');
 for(const width of[960,1280]){await page.setViewportSize({width,height:800});await navigate('Settings');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await scan(`Text 150 percent at ${width}`)}
-await invoke('preferences',{changes:{textScale:100,theme:'day',palette:'black-green',background:'picture',panelOpacity:65}});
+await invoke('preferences',{changes:{textScale:100,theme:'day',palette:'black-green',background:'color',panelOpacity:65}});
 await page.reload();await page.waitForSelector('.world-bubbles');await page.setViewportSize({width:1280,height:800});
-assert.equal(await page.locator('.pod-backdrop img').getAttribute('src'),'/backgrounds/sackboy.png');
+assert.equal(await page.locator('.pod-backdrop img').count(),0);
 await fs.writeFile('docs/reference-popit-results.json',JSON.stringify(results,null,2)+'\n');
 console.log(JSON.stringify(results.map(r=>({...r,violations:r.violations?.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}))})),null,2));
 await browser.close();

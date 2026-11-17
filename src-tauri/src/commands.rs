@@ -21,29 +21,27 @@ fn idle(s: &Store) -> Result<()> {
         Ok(())
     }
 }
+fn local_artwork(dir: &Path, name: &str, id: &str, limit: u64) -> Option<String> {
+    if name.is_empty() || !valid_artwork(name, id) { return None; }
+    let path = dir.join("art").join(name);
+    download::no_links(&path).ok()?;
+    let metadata = fs::metadata(&path).ok()?;
+    if !metadata.is_file() || metadata.len() > limit { return None; }
+    let bytes = fs::read(path).ok()?;
+    let mime = if bytes.starts_with(b"\x89PNG\r\n\x1a\n") { "image/png" }
+        else if bytes.starts_with(&[0xff, 0xd8, 0xff]) { "image/jpeg" } else { return None; };
+    Some(format!("data:{mime};base64,{}", base64::engine::general_purpose::STANDARD.encode(bytes)))
+}
 #[tauri::command]
 pub fn snapshot(s: tauri::State<Store>) -> Value {
     let c = s.get();
-    let mut artwork = serde_json::Map::new();
-    for g in &c.games {
-        if !g.artwork.is_empty() {
-            if let Ok(b) = fs::read(s.dir.join("art").join(&g.artwork)) {
-                let mime = if g.artwork.ends_with("png") {
-                    "image/png"
-                } else {
-                    "image/jpeg"
-                };
-                artwork.insert(
-                    g.id.clone(),
-                    json!(format!(
-                        "data:{mime};base64,{}",
-                        base64::engine::general_purpose::STANDARD.encode(b)
-                    )),
-                );
-            }
-        }
-    }
-    json!({"config":c,"tasks":s.tasks.lock().unwrap().values().cloned().collect::<Vec<_>>(),"running":*s.running.lock().unwrap(),"requirements":requirements_cached(&s),"artwork":artwork})
+    let artwork: serde_json::Map<String,Value> = c.games.iter().filter_map(|g|local_artwork(&s.dir,&g.artwork,&g.id,8*1024*1024).map(|v|(g.id.clone(),json!(v)))).collect();
+    let palette_artwork: serde_json::Map<String,Value> = PALETTE_IDS.iter().filter_map(|id|{
+        let key=format!("palette-{id}");
+        local_artwork(&s.dir,&format!("{key}.png"),&key,64*1024).map(|v|(id.to_string(),json!(v)))
+    }).collect();
+    let background_artwork=local_artwork(&s.dir,&c.background_artwork,"background",8*1024*1024);
+    json!({"config":c,"backgroundArtwork":background_artwork,"paletteArtwork":palette_artwork,"tasks":s.tasks.lock().unwrap().values().cloned().collect::<Vec<_>>(),"running":*s.running.lock().unwrap(),"requirements":requirements_cached(&s),"artwork":artwork})
 }
 #[tauri::command]
 pub fn preferences(s: tauri::State<Store>, changes: Value) -> Result<Config> {
@@ -56,6 +54,9 @@ pub fn preferences(s: tauri::State<Store>, changes: Value) -> Result<Config> {
         }
         if let Some(v) = changes.get("background").and_then(Value::as_str) {
             c.background = v.into()
+        }
+        if let Some(v) = changes.get("backgroundBlur").and_then(Value::as_u64) {
+            c.background_blur = u32::try_from(v).map_err(|_|"Invalid background blur")?
         }
         if let Some(v) = changes.get("panelOpacity").and_then(Value::as_u64) {
             c.panel_opacity = u32::try_from(v).map_err(|_|"Invalid panel opacity")?
@@ -551,12 +552,12 @@ pub async fn backup_config(app: tauri::AppHandle) -> Result<String> {
 }
 #[tauri::command]
 pub async fn restore_config(app: tauri::AppHandle) -> Result<String> {
-    tauri::async_runtime::spawn_blocking(move||{let s=app.state::<Store>();idle(&s)?;let p=rfd::FileDialog::new().set_title("Restore launcher configuration").add_filter("JSON",&["json"]).pick_file();if let Some(p)=p{if fs::metadata(&p).map_err(err)?.len()>2*1024*1024{return Err("Backup exceeds size limit.".into())}let mut c:Config=serde_json::from_slice(&fs::read(p).map_err(err)?).map_err(err)?;migrate_appearance(&mut c);validate_config(&c)?;for i in c.installations.values_mut(){i.managed=false;i.rollback.clear();}for g in &mut c.games{g.artwork.clear();}s.change(|current|{*current=c;Ok(())})?;Ok("Configuration restored. Installations imported as user-owned for safety. Revalidate game paths before playing.".into())}else{Ok("Restore cancelled.".into())}}).await.map_err(err)?
+    tauri::async_runtime::spawn_blocking(move||{let s=app.state::<Store>();idle(&s)?;let p=rfd::FileDialog::new().set_title("Restore launcher configuration").add_filter("JSON",&["json"]).pick_file();if let Some(p)=p{if fs::metadata(&p).map_err(err)?.len()>2*1024*1024{return Err("Backup exceeds size limit.".into())}let mut c:Config=serde_json::from_slice(&fs::read(p).map_err(err)?).map_err(err)?;migrate_appearance(&mut c);validate_config(&c)?;for i in c.installations.values_mut(){i.managed=false;i.rollback.clear();}c.background_artwork.clear();for g in &mut c.games{g.artwork.clear();}s.change(|current|{*current=c;Ok(())})?;Ok("Configuration restored. Installations imported as user-owned for safety. Revalidate game paths before playing.".into())}else{Ok("Restore cancelled.".into())}}).await.map_err(err)?
 }
 #[tauri::command]
 pub fn import_art(s: tauri::State<Store>, id: String, path: Option<String>) -> Result<Config> {
-    if !["lbp1", "lbp2", "lbp3"].contains(&id.as_str()) {
-        return Err("Unknown game".into());
+    if !["lbp1", "lbp2", "lbp3", "background"].contains(&id.as_str()) {
+        return Err("Unknown artwork target".into());
     }
     let name = if let Some(path) = path {
         let p = Path::new(&path);
@@ -579,7 +580,7 @@ pub fn import_art(s: tauri::State<Store>, id: String, path: Option<String>) -> R
         String::new()
     };
     s.change(|c| {
-        game_mut(c, &id)?.artwork = name;
+        if id == "background" { c.background_artwork = name; c.background = if c.background_artwork.is_empty() { "color".into() } else { "picture".into() }; } else { game_mut(c, &id)?.artwork = name; }
         Ok(())
     })
 }
@@ -590,6 +591,15 @@ pub async fn diagnostics(app: tauri::AppHandle) -> Result<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn local_artwork_rejects_paths_and_oversize_files() {
+        let dir=tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("art")).unwrap();
+        fs::write(dir.path().join("art/background.png"), b"\x89PNG\r\n\x1a\n").unwrap();
+        assert!(local_artwork(dir.path(),"background.png","background",8).is_some());
+        assert!(local_artwork(dir.path(),"background.png","background",7).is_none());
+        assert!(local_artwork(dir.path(),"../background.png","background",8).is_none());
+    }
     #[test]
     fn persistence_and_default_games() {
         let d = tempfile::tempdir().unwrap();

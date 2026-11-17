@@ -13,6 +13,6 @@ This launcher was independently written. No LBPPC, RPCS3, LittleBigRecomp or Rec
 - Rubik (current UI), Fredoka and Nunito (historical) fonts: SIL Open Font License 1.1. Full notices accompany fonts under `public/fonts/`.
 - Rust dependencies retain their own licenses in the Cargo registry. Exact versions are pinned in Cargo.lock. JavaScript versions are pinned in package-lock.json.
 
-Version 1.2 uses cropped game covers, supplied Popit color icons and a real forest photograph under the Unsplash License. Version 1.1 used gameplay screenshots. These images remain copyrighted by their respective owners and are excluded from the MIT license. Sources and rights notes are in docs/IMAGE-SOURCES.md. The app icon is a simple independently drawn bubble symbol. Version 1.0 UI captures are retained as historical documentation.
+Current public packages contain no LittleBigPlanet artwork, covers, backgrounds or game icon silhouettes. Local artwork remains under the user's control and is not covered by the code's MIT license. The launcher icon is independently drawn and the font notices are bundled.
 
-Version 1.2.1 removes the forest photograph. Its backdrop offers the user-supplied Sackboy picture or CSS theme colors. The supplied game picture is outside the MIT license. No generated illustration is used. Existing game covers and user-supplied color icons retain the rights described above.
+Historical releases and Git history may still contain earlier artwork. Removing files from the current tree does not revoke past downloads. Historical sources and the remaining cleanup limitation are recorded in docs/IMAGE-SOURCES.md.

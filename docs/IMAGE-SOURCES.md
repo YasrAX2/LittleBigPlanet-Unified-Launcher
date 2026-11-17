@@ -2,7 +2,11 @@
 
 ## Current version 1.2.1
 
-The user supplied public/backgrounds/sackboy.png. It is bundled unchanged (SHA-256 recorded in the package verification), with blur/dimming applied only by CSS. The optional Theme color mode uses CSS colors derived from the selected Popit theme. No AI imagery is used. The forest image is removed from the application; prior credits below are historical. The supplied Sackboy picture remains copyrighted game artwork outside the MIT code license.
+Public packages include no game artwork. Game covers, reference icon silhouettes, supplied backgrounds and screenshots containing game artwork have been removed from the current source tree. The original launcher icon and licensed Rubik font remain.
+
+Local images are selected by the user and copied into the local application data folder, with no upload. Blur is a CSS effect; no AI image service is used. Locally adding an image does not establish a redistribution license.
+
+Older Git history and earlier releases still contain the historical images described below. Removing the current files does not remove those copies or recall existing downloads. This needs separate cleanup and cannot provide legal immunity.
 
 ## Version 1.2 cover art
 
