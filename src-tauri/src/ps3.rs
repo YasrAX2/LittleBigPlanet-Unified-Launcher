@@ -48,6 +48,21 @@ pub fn package_title(path: &Path) -> Result<String> {
     if !title[..4].iter().all(u8::is_ascii_uppercase)||!title[4..].iter().all(u8::is_ascii_digit) { return Err("Package content ID is invalid.".into()); }
     Ok(String::from_utf8(title.to_vec()).map_err(err)?)
 }
+pub fn installed_game(current: &crate::model::Game, installed: &Path, title: &str, req: &crate::release::Requirements) -> Result<metadata::Inspection> {
+    let data=metadata::sfo_at(installed).map_err(|_|"No matching installed game metadata was found. Updates/DLC require their base game.".to_string())?;
+    if current.title_id==title && !current.data.is_empty() {
+        if let Ok(mut r)=metadata::inspect(&current.id,Path::new(&current.data),false,req) {
+            if r.valid && r.title_id==title {
+                if let Some(version)=data.get("APP_VER"){r.version=version.clone();}
+                return Ok(r);
+            }
+        }
+    }
+    if data.get("CATEGORY").is_some_and(|v|v=="GD") {return Err("Update installed. Link the original base-game folder before playing; an update is not a complete game.".into());}
+    let r=metadata::inspect(&current.id,installed,false,req)?;
+    if !r.valid || r.title_id!=title {return Err("Installed content is not a complete matching LBP game. Check RPCS3; original package retained.".into());}
+    Ok(r)
+}
 fn installation_confirmed(i: &Installation, option: &str, source: &Path, started: SystemTime) -> Result<bool> {
     use std::io::{Seek,SeekFrom};
     let root=root(i)?;
@@ -132,6 +147,19 @@ fn run_installer_cancellable(i: &Installation, option: &str, path: &Path, cancel
         fs::write(root.join("log/RPCS3.log"),"Successfully installed PS3 firmware version 4.93.").unwrap();
         assert!(installation_confirmed(&i,"--installfw",Path::new("unused"),SystemTime::UNIX_EPOCH).unwrap());
         assert!(!installation_confirmed(&i,"--installfw",Path::new("unused"),SystemTime::now()+Duration::from_secs(10)).unwrap());
+    }
+
+    #[test] fn updates_preserve_the_linked_disc_folder() {
+        let temp=tempfile::tempdir().unwrap();let disc=temp.path().join("disc");let update=temp.path().join("update");
+        fs::create_dir_all(disc.join("PS3_GAME/USRDIR")).unwrap();fs::create_dir_all(update.join("USRDIR")).unwrap();
+        fs::write(disc.join("PS3_GAME/PARAM.SFO"),metadata::fixture("LittleBigPlanet 2","BCUS98245","01.00")).unwrap();
+        fs::write(disc.join("PS3_GAME/USRDIR/EBOOT.BIN"),b"original").unwrap();
+        fs::write(update.join("PARAM.SFO"),metadata::fixture("LittleBigPlanet 2","BCUS98245","01.33")).unwrap();
+        fs::write(update.join("USRDIR/EBOOT.BIN"),b"update").unwrap();
+        let current=crate::model::Game{id:"lbp2".into(),title_id:"BCUS98245".into(),data:disc.to_string_lossy().into(),..Default::default()};
+        let r=installed_game(&current,&update,"BCUS98245",&Default::default()).unwrap();
+        assert_eq!(Path::new(&r.path).canonicalize().unwrap(),disc.canonicalize().unwrap());assert_eq!(r.version,"01.33");
+        assert_eq!(fs::read(disc.join("PS3_GAME/USRDIR/EBOOT.BIN")).unwrap(),b"original");
     }
 
 }

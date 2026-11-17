@@ -743,8 +743,8 @@ pub async fn import_ps3_package(app: tauri::AppHandle, id: String, path: String)
             let installed=crate::ps3::root(i)?.join("dev_hdd0/game").join(&title);
             let existed=installed.is_dir();
             crate::ps3::run_installer(i,"--installpkg",Path::new(&path))?;
-            let r=metadata::inspect(&id,&installed,false,&requirements_cached(&s)).map_err(|_|"RPCS3 finished but no matching game folder was confirmed. Check its log. Updates/DLC need their base game installed first.".to_string())?;
-            if !r.valid {return Err("Package was processed, but it is not a complete matching LBP game. Check RPCS3's log; original package retained.".into());}
+            let current=c.games.iter().find(|g|g.id==id).ok_or("Unknown game")?;
+            let r=crate::ps3::installed_game(current,&installed,&title,&requirements_cached(&s))?;
             s.change(|c|{let g=game_mut(c,&id)?;g.engine="rpcs3".into();g.data=r.path;g.title_id=r.title_id;g.version=r.version;g.region=r.region;Ok(())})?;
             Ok(if existed{"RPCS3 processed the package and the existing matching game is linked. Check RPCS3 for update/DLC details."}else{"Installed game folder found and linked. Some digital games still need your own game license in RPCS3."}.into())
         })();*s.busy.lock().map_err(err)?=false;let _=app.emit("changed",());result

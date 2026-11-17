@@ -18,7 +18,7 @@ A local patchwork-setup-result.json records the operation, confirmation and shut
 
 Normal/portable RPCS3 data locations are supported. An external RPCS3_CONFIG_DIR is refused for automatic setup because its semantics cannot safely be guessed. Custom VFS paths may need setup through RPCS3. The LBP starting profile changes Write Color Buffers for game effects unless an explicit per-game choice already exists, and preserves other CPU, timing and global configuration. Its option can be disabled.
 
-Package validation checks the PS3 signature/type, size and a safe content-ID title before RPCS3 receives a path. PS4 packages are refused. Original package files remain where selected; installed content is engine-owned. Updates/DLC still require their base game. Real package installation and gameplay remain unverified because no owner game package was available.
+Package validation checks the PS3 signature/type, size and a safe content-ID title before RPCS3 receives a path. PS4 packages are refused. Original package files remain where selected; installed content is engine-owned. An update preserves an already linked disc-game folder instead of replacing it with the update-only directory. Updates/DLC still require their base game. Real package installation and gameplay remain unverified because no owner game package was available.
 
 ## Primary implementation references
 
