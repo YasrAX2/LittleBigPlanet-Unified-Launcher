@@ -8,8 +8,8 @@ const invoke=(command,args={})=>page.evaluate(({command,args})=>window.__TAURI_I
 const results=[];
 const directory='docs/screenshots-v1.2.1';
 await fs.mkdir(directory,{recursive:true});
-await page.reload();await page.waitForSelector('.world-bubbles');
-await invoke('preferences',{changes:{palette:'black-green',panelOpacity:65,textScale:100,theme:'day'}});
+await page.waitForSelector('.world-bubbles');await page.reload();await page.waitForSelector('.world-bubbles');
+await invoke('preferences',{changes:{palette:'black-green',background:'picture',panelOpacity:65,textScale:100,theme:'day'}});
 await page.reload();await page.waitForSelector('.world-bubbles');
 async function navigate(label){
  if(await page.locator('.menu-toggle').isVisible()){
@@ -41,6 +41,12 @@ await page.locator('.menu-toggle').click();await page.setViewportSize({width:128
 assert.equal(await page.locator('#navigation-menu').isVisible(),false);assert.equal(await page.locator('.menu-toggle').isVisible(),false);
 results.push({check:'Escape and expansion close the compact modal without leaving a backdrop',passed:true});
 await navigate('Settings');
+assert.equal(await page.getByRole('radio').count(),2);
+assert.ok(await page.locator('.pod-backdrop img').evaluate(e=>e.complete&&getComputedStyle(e).filter.includes('blur(8px)')));
+await page.getByRole('radio',{name:/Theme color/}).check();
+assert.equal(await page.locator('.pod-backdrop img').count(),0);
+await page.reload();await page.waitForSelector('.world-bubbles');assert.equal((await invoke('snapshot')).config.background,'color');
+await navigate('Settings');
 assert.equal(await page.locator('.palette-choice').count(),10);
 assert.ok((await page.locator('.main').evaluate(e=>getComputedStyle(e).backdropFilter)).includes('blur'));
 await page.screenshot({path:`${directory}/appearance-black-green.png`,fullPage:true,mask:[page.locator('.path')],maskColor:'#263e33'});
@@ -58,8 +64,9 @@ for(const p of [{id:'black-green',name:'Black & green',top:'#080b0a',bottom:'#08
 }
 await page.getByRole('button',{name:'Violet & green color',exact:true}).click();
 await page.getByRole('slider',{name:'Panel opacity',exact:true}).fill('75');await page.waitForTimeout(100);
+await page.getByRole('radio',{name:/Sackboy picture/}).check();
 await page.reload();await page.waitForSelector('.world-bubbles');
-const snapshot=await invoke('snapshot');assert.equal(snapshot.config.palette,'violet-green');assert.equal(snapshot.config.panelOpacity,75);
+const snapshot=await invoke('snapshot');assert.equal(snapshot.config.background,'picture');assert.equal(snapshot.config.palette,'violet-green');assert.equal(snapshot.config.panelOpacity,75);
 await navigate('Settings');await page.screenshot({path:`${directory}/appearance-violet-green.png`,fullPage:true,mask:[page.locator('.path')],maskColor:'#263e33'});
 results.push({check:'Reference color and opacity persist after reload',passed:true});
 await invoke('preferences',{changes:{palette:'black-green',panelOpacity:65}});
@@ -79,9 +86,9 @@ for(const title of ['LittleBigPlanet','LittleBigPlanet 2','LittleBigPlanet 3']){
 }
 await invoke('preferences',{changes:{textScale:150}});await page.reload();await page.waitForSelector('.world-bubbles');
 for(const width of[960,1280]){await page.setViewportSize({width,height:800});await navigate('Settings');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await scan(`Text 150 percent at ${width}`)}
-await invoke('preferences',{changes:{textScale:100,theme:'day',palette:'black-green',panelOpacity:65}});
+await invoke('preferences',{changes:{textScale:100,theme:'day',palette:'black-green',background:'picture',panelOpacity:65}});
 await page.reload();await page.waitForSelector('.world-bubbles');await page.setViewportSize({width:1280,height:800});
-assert.equal(await page.locator('.pod-backdrop img').count(),0);assert.equal(await page.locator('.pod-backdrop').evaluate(e=>getComputedStyle(e).backgroundImage),'none');
+assert.equal(await page.locator('.pod-backdrop img').getAttribute('src'),'/backgrounds/sackboy.png');
 await fs.writeFile('docs/reference-popit-results.json',JSON.stringify(results,null,2)+'\n');
 console.log(JSON.stringify(results.map(r=>({...r,violations:r.violations?.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}))})),null,2));
 await browser.close();

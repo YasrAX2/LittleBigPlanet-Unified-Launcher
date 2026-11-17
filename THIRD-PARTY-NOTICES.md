@@ -15,4 +15,4 @@ This launcher was independently written. No LBPPC, RPCS3, LittleBigRecomp or Rec
 
 Version 1.2 uses cropped game covers, supplied Popit color icons and a real forest photograph under the Unsplash License. Version 1.1 used gameplay screenshots. These images remain copyrighted by their respective owners and are excluded from the MIT license. Sources and rights notes are in docs/IMAGE-SOURCES.md. The app icon is a simple independently drawn bubble symbol. Version 1.0 UI captures are retained as historical documentation.
 
-Version 1.2.1 removes the forest photograph. Its backdrop uses CSS colors only, with no background image or generated illustration. Existing game covers and user-supplied color icons retain the rights described above.
+Version 1.2.1 removes the forest photograph. Its backdrop offers the user-supplied Sackboy picture or CSS theme colors. The supplied game picture is outside the MIT license. No generated illustration is used. Existing game covers and user-supplied color icons retain the rights described above.

@@ -2,7 +2,7 @@
 
 ## Current version 1.2.1
 
-The active backdrop is a solid CSS color: Popit green (#143e32), or darker green (#0d2c24) in night mode. No backdrop image or generated artwork is used. The forest photograph was removed from the application. Version 1.2 image records below are historical.
+The user supplied public/backgrounds/sackboy.png. It is bundled unchanged (SHA-256 recorded in the package verification), with blur/dimming applied only by CSS. The optional Theme color mode uses CSS colors derived from the selected Popit theme. No AI imagery is used. The forest image is removed from the application; prior credits below are historical. The supplied Sackboy picture remains copyrighted game artwork outside the MIT code license.
 
 ## Version 1.2 cover art
 

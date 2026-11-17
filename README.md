@@ -2,11 +2,11 @@
 
 **LittleBigPlanet Unified Launcher** for Windows.
 
-An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.2.1 uses a plain Popit-green backdrop, game covers, responsive navigation, translucent black/green Popit panels, nine reference color pairs and Rubik typography. No game data, firmware or music is included. Image sources and rights are recorded in [IMAGE-SOURCES.md](docs/IMAGE-SOURCES.md); game visuals are excluded from the MIT license.
+An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.2.1 offers the supplied blurred Sackboy picture or a solid background matching the selected theme, game covers, responsive navigation, translucent black/green Popit panels, nine reference color pairs and Rubik typography. No game data, firmware or music is included. Image sources and rights are recorded in [IMAGE-SOURCES.md](docs/IMAGE-SOURCES.md); game visuals are excluded from the MIT license.
 
 ## Download
 
-[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download the SHA256SUMS file to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [1.2.1 backdrop correction](docs/REDESIGN-1.2.1.md) and [backend verification](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
+[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download the SHA256SUMS file to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [1.2.1 background choices](docs/REDESIGN-1.2.1.md) and [backend verification](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
 
 ![The actual Patchwork Pod desktop app](docs/screenshots-v1.2.1/day-home.png)
 

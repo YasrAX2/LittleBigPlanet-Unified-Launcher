@@ -54,6 +54,9 @@ pub fn preferences(s: tauri::State<Store>, changes: Value) -> Result<Config> {
         if let Some(v) = changes.get("palette").and_then(Value::as_str) {
             c.palette = v.into()
         }
+        if let Some(v) = changes.get("background").and_then(Value::as_str) {
+            c.background = v.into()
+        }
         if let Some(v) = changes.get("panelOpacity").and_then(Value::as_u64) {
             c.panel_opacity = u32::try_from(v).map_err(|_|"Invalid panel opacity")?
         }

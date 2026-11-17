@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 export type Game={id:string;engine:string;data:string;update:string;titleId:string;region:string;version:string;favorite:boolean;seconds:number;lastPlayed:number;fullscreen:boolean;artwork:string};
 export type Installation={engine:string;executable:string;version:string;managed:boolean;root:string;rollback:string};
-export type Config={schema:number;theme:string;palette:string;panelOpacity:number;reducedMotion:boolean;textScale:number;controller:boolean;onboarding:boolean;installRoot:string;games:Game[];installations:Record<string,Installation>;activity:string[]};
+export type Config={schema:number;theme:string;palette:string;background:'picture'|'color';panelOpacity:number;reducedMotion:boolean;textScale:number;controller:boolean;onboarding:boolean;installRoot:string;games:Game[];installations:Record<string,Installation>;activity:string[]};
 export type Task={engine:string;version:string;status:string;downloaded:number;total:number;speed:number;error:string};
 export type Requirements={titleIds:string[];version:string;checked:number;live:boolean;source:string};
 export type Snapshot={config:Config;tasks:Task[];running:string[];requirements:Requirements;artwork:Record<string,string>};
