@@ -19,7 +19,7 @@ reqwest = { version = "0.12", default-features = false, features = ["blocking", 
 sha2 = "0.10"
 zip = { version = "9.6.1", default-features = false, features = ["deflate"] }
 sevenz-rust = { package = "sevenz-rust2", version = "0.25" }
-rfd = "0.15"
+rfd = "0.18"
 base64 = "0.22"
 tempfile = "3"
 serde_yaml = { package = "yaml_serde", version = "0.10.7" }
