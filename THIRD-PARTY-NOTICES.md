@@ -13,6 +13,4 @@ This launcher was independently written. No LBPPC, RPCS3, LittleBigRecomp or Rec
 - Rubik (current UI), Fredoka and Nunito (historical) fonts: SIL Open Font License 1.1. Full notices accompany fonts under `public/fonts/`.
 - Rust dependencies retain their own licenses in the Cargo registry. Exact versions are pinned in Cargo.lock. JavaScript versions are pinned in package-lock.json.
 
-Current public packages contain no LittleBigPlanet artwork, covers, backgrounds or game icon silhouettes. Local artwork remains under the user's control and is not covered by the code's MIT license. The launcher icon is independently drawn and the font notices are bundled.
-
-Historical releases and Git history may still contain earlier artwork. Removing files from the current tree does not revoke past downloads. Historical sources and the remaining cleanup limitation are recorded in docs/IMAGE-SOURCES.md.
+Public packages include the default Sackboy background, three LittleBigPlanet covers and ten Popit color icons selected by yasrax2. These remain the property of their respective rights holders and are excluded from the code's MIT license. No open-content license is claimed for this game imagery. Custom imported images remain local. The independently drawn launcher icon and licensed fonts retain their separate notices. See docs/IMAGE-SOURCES.md for the asset inventory.

@@ -90,10 +90,10 @@ impl Default for Config {
             schema: 1,
             theme: "day".into(),
             palette: "black-green".into(),
-            background: "color".into(),
+            background: "picture".into(),
             background_blur: 8,
             background_artwork: String::new(),
-            panel_opacity: 65,
+            panel_opacity: 55,
             reduced_motion: false,
             text_scale: 100,
             typography: "current".into(),
@@ -264,8 +264,8 @@ mod appearance_tests {
         json.as_object_mut().unwrap().remove("backgroundArtwork");
         let old:Config=serde_json::from_value(json).unwrap();
         assert_eq!(old.palette,"black-green");
-        assert_eq!(old.panel_opacity,65);
-        assert_eq!(old.background,"color");
+        assert_eq!(old.panel_opacity,55);
+        assert_eq!(old.background,"picture");
         assert_eq!(old.background_blur,8);
         assert!(old.background_artwork.is_empty());
         validate_config(&old).unwrap();

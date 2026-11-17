@@ -132,7 +132,7 @@ Experimental rendering does not implement 60/120 Hz simulation or world-motion i
 
 Settings includes theme-color/local-picture backgrounds; 0–24px picture blur; black/green and nine optional color pairs; panel opacity; Daytime/Nighttime/Follow Windows; Current/LBP Wiki text presets; 85–150% text scale; reduced motion and controller navigation. Wiki typography uses the existing licensed Rubik font with heavier headings.
 
-Game pages offer Custom artwork. Backgrounds/covers accept PNG/JPEG up to 8 MB and stay local. Reset/remove controls unlink artwork rather than securely erasing stored copies. Public builds contain no game pictures or proprietary game font files.
+Game pages offer Custom artwork. Backgrounds/covers accept PNG/JPEG up to 8 MB and stay local. Reset/remove controls unlink artwork rather than securely erasing stored copies. Public builds include the selected default background, covers and Popit icons, but no proprietary game font files. **Restore default look** resets appearance without changing game paths or accessibility settings.
 
 Keyboard: Tab moves focus, Enter/Space activates. Optional controller navigation uses D-pad/left stick, A to select, B to return; Windows/WebView2 must expose the controller. Configure actual in-game mappings in the engine. Physical controller behavior and complete native accessibility checks remain unverified.
 

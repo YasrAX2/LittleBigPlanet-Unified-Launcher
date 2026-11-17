@@ -13,7 +13,7 @@ Free, unofficial Windows launcher for LittleBigPlanet 1, 2 and 3. Link your game
 4. For LBP3, link a matching **1.28 update** unless the game folder already contains that version.
 5. **Validate**, then **Play**.
 
-Windows 10/11 x64 and WebView2 are required. Builds are unsigned; SHA256SUMS accompany downloads. No games, firmware, keys or game artwork are bundled.
+Windows 10/11 x64 and WebView2 are required. Builds are unsigned; SHA256SUMS accompany downloads. No games, firmware or keys are bundled. The default Sackboy background, game covers and Popit color icons are included.
 
 ## Which files do I import?
 
@@ -84,3 +84,7 @@ Development was assisted by AI, including code implementation, debugging, resear
 Created by **yasrax2**. Thanks to [LBPPC](https://github.com/emurphy04/LBPPC), [RPCS3](https://github.com/RPCS3/rpcs3) and the libraries listed in [third-party notices](THIRD-PARTY-NOTICES.md). Launcher source: [MIT](LICENSE).
 
 No launcher account, ads or analytics. Imported pictures stay local; automatic release checks contact GitHub. Unofficial fan project, not affiliated with or endorsed by Sony Interactive Entertainment, Media Molecule or Sumo Digital. Game names and artwork belong to their respective owners. [Artwork and distribution](docs/LEGAL.md).
+
+### Default appearance
+
+New installs use the included Sackboy background with 8 px blur, black-and-green colors and 55% panel opacity. Existing users can select **Settings > Restore default look**. This resets appearance only; game paths, saves and accessibility settings remain unchanged. Custom imported pictures stay local. Artwork credits and ownership are described in [image sources](docs/IMAGE-SOURCES.md).
