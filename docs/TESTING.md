@@ -1,3 +1,13 @@
+# Version 1.5.0 verification
+
+36 Rust, 9 frontend and 8 Python tests pass (53). The separate official-firmware integration test is opt-in and excluded from normal CI. Tests cover PS3 versus PS4 headers, truncated packages/unsafe identifiers, normal/portable firmware detection, fresh completion evidence, and per-game profile preservation without changing Vblank/frame limits when overrides are off.
+
+The official RPCS3 Windows archive was SHA-256 verified. Its headless firmware installer wrote firmware 4.93 and logged explicit success. It then exited abnormally (Windows 0xC0000409), so the launcher confirms installation from fresh logs and installed files, and records the abnormal exit separately. The integrated Rust firmware setup test passed after ensuring the log directory/streams exist before RPCS3 starts. The network download and pinned digest were exercised, and repeated installation was confirmed using a fresh completion log. Real game PKG installation and LBP gameplay remain unverified: no owner package was available. Native desktop visual testing remains incomplete.
+
+See [PS3 setup details](PS3-SETUP.md), [user guide](USAGE.md) and [Q&A](FAQ.md).
+
+---
+
 # Version 1.4.0 test-build verification
 
 17 November 2026: 9 frontend, 32 Rust and 8 Python tests pass (49 total). The production frontend builds. Coverage includes opt-in mode validation, isolated/offline environment creation, inherited credential removal, prepared-image site checking, stopping failed research hooks and preserving normal settings. Typography choices persist and reject unknown values.

@@ -87,13 +87,9 @@ fn merge_yaml(base: &mut serde_yaml::Value, overlay: serde_yaml::Value) {
 pub fn rpcs3_profile(dir: &Path, installation: &Installation, game: &Game) -> Result<PathBuf> {
     game.video.validate("rpcs3")?;
     if !["lbp1","lbp2"].contains(&game.id.as_str()) { return Err("Unknown RPCS3 game profile.".into()); }
-    let engine_root=Path::new(&installation.root);
-    let portable=engine_root.join("portable");
-    // RPCS3 gives a portable folder precedence over its environment override.
-    if !portable.is_dir() && std::env::var_os("RPCS3_CONFIG_DIR").is_some() {
-        return Err("RPCS3_CONFIG_DIR is set. Keep video overrides off and configure video in RPCS3 to preserve that custom location.".into());
-    }
-    let root=if portable.is_dir() { portable.as_path() } else { engine_root };
+    let config_root=crate::ps3::root(installation)?;
+    let engine_root=config_root.as_path();
+    let root=engine_root;
     let title=game.title_id.as_bytes();
     let valid_title=title.len()==9 && title[..4].iter().all(u8::is_ascii_uppercase) && title[4..].iter().all(u8::is_ascii_digit);
     let custom=root.join("config/custom_configs").join(format!("config_{}.yml",game.title_id));
@@ -104,13 +100,15 @@ pub fn rpcs3_profile(dir: &Path, installation: &Installation, game: &Game) -> Re
     let custom=beside_game.filter(|p|p.is_file()).or_else(|| {
         if !valid_title { None } else if custom.is_file() { Some(custom) } else if legacy_custom.is_file() { Some(legacy_custom) } else { None }
     });
-    if let Some(path)=custom { merge_yaml(&mut data,read_yaml(&path)?); }
+    let mut custom_color=false;
+    if let Some(path)=custom { let overlay=read_yaml(&path)?;custom_color=overlay["Video"]["Write Color Buffers"].is_bool();merge_yaml(&mut data,overlay); }
     let mapping=data.as_mapping_mut().unwrap();
     let key=serde_yaml::Value::String("Video".into());
     let node=mapping.entry(key).or_insert_with(||serde_yaml::Value::Mapping(Default::default()));
     let video=node.as_mapping_mut().ok_or("Unexpected RPCS3 Video configuration.")?;
-    video.insert(serde_yaml::Value::String("Resolution Scale".into()),serde_yaml::to_value(game.video.resolution_scale).map_err(err)?);
-    if game.video.target_fps!=0 {
+    if game.ps3_compatibility && !custom_color {video.insert(serde_yaml::Value::String("Write Color Buffers".into()),serde_yaml::Value::Bool(true));}
+    if game.video.enabled {video.insert(serde_yaml::Value::String("Resolution Scale".into()),serde_yaml::to_value(game.video.resolution_scale).map_err(err)?); }
+    if game.video.enabled && game.video.target_fps!=0 {
         video.insert(serde_yaml::Value::String("Frame limit".into()),serde_yaml::Value::String(game.video.target_fps.to_string()));
     }
     let output=dir.join("video").join(format!("rpcs3-{}.yml",game.id));
@@ -202,6 +200,20 @@ mod tests {
         assert!(VideoSettings{rendering:"standard".into(),..v.clone()}.validate("lbppc").is_err());
         let original=json!({"password_protected":"private","frame_gen":"dlss"});let mut data=original.clone();
         patch_lbppc(&mut data,&v).unwrap();assert_eq!(data,original);
+    }
+
+    #[test]
+    fn lbp_starting_profile_keeps_timing_scale_and_custom_choices() {
+        let root=tempfile::tempdir().unwrap();let dir=tempfile::tempdir().unwrap();
+        fs::write(root.path().join("config.yml"),"Video:\n  Frame limit: Auto\n  Resolution Scale: 200\n  Write Color Buffers: false\n  Vblank Rate: 60\nCore:\n  PPU Decoder: LLVM Recompiler\n").unwrap();
+        let i=Installation{root:root.path().to_string_lossy().into(),..Default::default()};
+        let g=Game{title_id:"NPUA80662".into(),..Default::default()};
+        let path=rpcs3_profile(dir.path(),&i,&g).unwrap();
+        let value=read_yaml(&path).unwrap();assert_eq!(value["Video"]["Resolution Scale"].as_u64(),Some(200));
+        assert_eq!(value["Video"]["Frame limit"].as_str(),Some("Auto"));assert_eq!(value["Video"]["Write Color Buffers"].as_bool(),Some(true));
+        fs::create_dir_all(root.path().join("config/custom_configs")).unwrap();
+        fs::write(root.path().join("config/custom_configs/config_NPUA80662.yml"),"Video:\n  Write Color Buffers: false\n").unwrap();
+        let path=rpcs3_profile(dir.path(),&i,&g).unwrap();assert_eq!(read_yaml(&path).unwrap()["Video"]["Write Color Buffers"].as_bool(),Some(false));
     }
 
 }

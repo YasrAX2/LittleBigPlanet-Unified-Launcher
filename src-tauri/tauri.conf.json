@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Patchwork Pod",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "identifier": "com.patchworkpod.launcher",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -52,8 +52,13 @@
       "../THIRD-PARTY-LICENSES.txt": "THIRD-PARTY-LICENSES.txt",
       "../docs/IMAGE-SOURCES.md": "IMAGE-SOURCES.md",
       "../PRIVACY.md": "PRIVACY.md",
-      "../docs/VIDEO.md": "VIDEO.md",
-      "../docs/NATIVE-TESTING.md": "NATIVE-TESTING.md"
+      "../docs/VIDEO.md": "docs/VIDEO.md",
+      "../docs/NATIVE-TESTING.md": "docs/NATIVE-TESTING.md",
+      "../README.md": "README.md",
+      "../docs/USAGE.md": "docs/USAGE.md",
+      "../docs/FAQ.md": "docs/FAQ.md",
+      "../docs/TROUBLESHOOTING.md": "docs/TROUBLESHOOTING.md",
+      "../docs/PS3-SETUP.md": "docs/PS3-SETUP.md"
     }
   }
 }

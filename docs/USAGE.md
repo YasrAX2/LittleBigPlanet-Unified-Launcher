@@ -1,33 +1,164 @@
-# Installation and use
+# Complete launcher guide
 
-Windows 10/11 x64. Run the setup EXE, or extract the portable ZIP and run `patchwork-pod.exe`. The installer supplies the WebView2 bootstrapper when needed. Portable users need Microsoft's WebView2 Evergreen Runtime, normally already present on supported Windows systems. No development tools are needed.
+[Project](../README.md) · [Q&A](FAQ.md) · [Troubleshooting](TROUBLESHOOTING.md)
 
-1. Open a game card. LBP1/2 default to RPCS3; LBP3 defaults to LBPPC.
-2. Install the official engine, or import its existing Windows executable.
-3. Choose your extracted, legally obtained game folder under Game files.
-4. For LBP3, choose a separate matching update folder unless the base folder already contains supported version 1.28. US CUSA00473 and European CUSA00063 are supported by the current upstream requirements.
-5. Validate, then Play. LBPPC retains its own graphics, controls and online settings. RPCS3 firmware and game-license installation remain in RPCS3.
+## Install and choose a version
 
-LBPPC data folders must contain eboot.bin, base_001.farc and metadata under sce_sys or Sc0. Select the game folder itself; wrapper directories and incomplete system-only extractions should be opened at their actual game root. RPCS3 data needs PARAM.SFO and USRDIR/EBOOT.BIN, either directly or under PS3_GAME. The final engine may detect further missing or encrypted files.
+Open [Releases](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases). Stable 1.3.0 has standard video settings. 1.4.0 adds experimental native-rendering profiles and Wiki typography; 1.5.0 also adds PS3 package imports and automatic firmware preparation.
 
-## Maintenance
+Choose the **x64-setup.exe** installer, or extract the full **Windows-x64.zip** and run `patchwork-pod.exe`. The Source ZIP is not a ready-to-run application. Portable preferences still live in Windows local application data. No development tools are required. WebView2 is required; the installer can install its bootstrapper. Builds are unsigned. Compare downloads against the release's SHA256SUMS if checking integrity.
 
-Downloads shows actual byte progress, speed and errors. Cancel retains a partial download. Retry resumes only when the server supports ranges and file identity can be validated. SHA-256 is checked when published by upstream. Archives are extracted into staging before switching installations.
+Engines have separate hardware requirements. [LBPPC's official requirements](https://github.com/emurphy04/LBPPC) include Vulkan graphics support. Installation and metadata checks cannot guarantee that a game runs on every PC.
 
-Update / Repair reinstalls the current official release while retaining user-created files and customized JSON/INI/YAML/TOML/CFG settings. Verify compares release files to their recorded hashes; changed settings may appear as changed files. Roll back switches to the previous retained release and preserves current user files. Inspect engine-owned settings and saves before rolling back across major upstream changes.
+## Engines and first-time PS3 setup
 
-Uninstall moves a managed engine to a timestamped sibling backup, retaining saves and all other files. It removes the launcher's active reference. Imported installations use Forget, which removes only the reference. Move copies and verifies a managed engine at the new location; the original remains as a backup. Old backup folders can consume disk space; remove them manually only after checking saves.
+Open a game in Library, then **Install** its engine, or **Import existing** and choose its already extracted Windows executable:
 
-## Personalization and accessibility
+| Game | Engine executable |
+| --- | --- |
+| LBP1 and LBP2 | `rpcs3.exe`; both games can share the same engine. |
+| LBP3, PS4 edition | `LBPPC.exe`; keep its complete package, including bin/scripts and companion files. |
 
-Star cards for Favorites. Recently played and playtime are local. Playtime counts the launched engine's process lifetime, including its initial setup and open launcher window. Keep Patchwork Pod open until the engine exits.
+Keep engine folders and game data separate, for example `Engines/RPCS3` and `Games/LBP1`. Do not put game dumps inside managed engine directories.
 
-Import your own PNG/JPEG artwork up to 8 MB. Artwork is private to this computer. Daytime, nighttime and Windows-following themes are in Settings. Text scales from 85% to 150%. Windows reduced-motion preferences are respected, with an additional explicit toggle.
+Version 1.5.0 prepares official PS3 firmware automatically after installing/importing RPCS3. **Prepare RPCS3** retries setup. **Install firmware file** accepts an official local `.PUP` if automatic download is unavailable. Installation runs through RPCS3's supported headless installer and checks for the installed firmware afterward. The bundled code pins firmware 4.93 by its size and SHA-256. Sony's published HTTP download is authenticated against that pin before installation; mismatches are refused. Firmware is downloaded separately, not redistributed in release assets.
 
-Tab moves focus, Enter/Space selects. A detected controller uses D-pad/left stick, A to select and B to return. Physical controller hardware was not available for verification; support depends on WebView2 exposing the Windows controller.
+Get firmware only from [PlayStation's official page](https://www.playstation.com/en-us/support/hardware/ps3/system-software/). Follow the [RPCS3 quickstart](https://rpcs3.net/quickstart) for custom configurations and game licenses. An unusual RPCS3_CONFIG_DIR or custom virtual filesystem can require setup in RPCS3 itself. Normal and portable layouts are recognized.
 
-## Offline and privacy
+LBP1/2 currently use emulation through RPCS3 on Windows. Their future-native-project import options do not establish present Windows game compatibility. LBP3 uses the separate native LBPPC project.
 
-Configured local engines launch without a network requirement. Online game features belong to the engine. Release and requirements refreshes use GitHub and may fail offline without affecting saved configuration.
+## Game imports
 
-Backup exports launcher preferences and local file paths. Keep backups private. It does not back up game saves or artwork. Restore retains a backup of the current configuration and imports engine folders as user-owned references for safety. Diagnostics omit local paths, names, logs, artwork and account credentials. Nothing is uploaded automatically.
+Open **Game files**, select a game and use **Choose game folder**. Select the actual root directory containing the files below. Keep all remaining dump files; these trees show required markers, not complete file lists.
+
+### LBP1 / LBP2: extracted PS3 games
+
+```text
+My LBP1/                 <- choose this folder
+  PS3_GAME/
+    PARAM.SFO
+    USRDIR/
+      EBOOT.BIN
+      ...other game files...
+```
+
+Selecting `PS3_GAME` itself also works. Digital installations may use this direct layout:
+
+```text
+Installed game/         <- choose this folder
+  PARAM.SFO
+  USRDIR/
+    EBOOT.BIN
+    ...other game files...
+```
+
+A lone EBOOT.BIN or PARAM.SFO is insufficient. Dump preparation, any required decryption and game licenses belong to the engine's supported workflow.
+
+### LBP1 / LBP2: PS3 PKG files, version 1.5.0
+
+1. Install/import RPCS3 first.
+2. On the matching game's Game files panel, click **Install PS3 PKG**.
+3. Select your own `.pkg` file. The launcher checks the PS3 header, content ID and complete declared size; PS4 packages are rejected.
+4. Firmware is prepared if missing. RPCS3 installs the package; large files take time.
+5. A matching complete LBP game folder is linked automatically when found. Use **Validate**, then **Play**.
+
+Updates and DLC require their base game already installed. When a matching installation already existed, the launcher reports package processing and linking; check RPCS3 for update/DLC details. It does not claim a zero process exit alone proves successful installation. A missing/wrong installed game is reported instead of silently linking unrelated data.
+
+Some digital games need the user's own license. The launcher cannot generate it. Install your legally obtained license through RPCS3. Original packages are retained. If an installer fails, inspect RPCS3's local log before retrying.
+
+### LBP3: extracted PS4 base game and update
+
+```text
+My LBP3/                <- base game folder
+  eboot.bin
+  base_001.farc
+  sce_sys/
+    param.sfo
+  ...other game files...
+
+My LBP3-Update/         <- separate matching update folder
+  eboot.bin
+  sce_sys/
+    param.sfo
+  ...other update files...
+```
+
+Current supported title IDs are US **CUSA00473** and Europe **CUSA00063**, update **1.28**. Choose the matching separate update unless the base folder is already combined at 1.28. Regions must match. Metadata at `Sc0/param.sfo` is also recognized in certain layouts, but a system-only Sc0 folder is not a complete base game.
+
+A PS3 copy of LBP3 is not accepted by this PS4 adapter. PS4 PKG installation is not implemented. Prepare your own extracted game/update using the [official LBPPC guide](https://lbppc.com/getting-started) first.
+
+### Other formats
+
+| Format | Treatment |
+| --- | --- |
+| ZIP / 7z / RAR | Extract fully, then choose a usable game root. Extraction does not decrypt a game. |
+| PS3 ISO | Follow RPCS3's supported preparation workflow to obtain folder data before linking here. |
+| PS3 PKG | Use Install PS3 PKG in 1.5.0; older launcher versions require installation in RPCS3 first. |
+| PS4 PKG | Not supported directly. Prepare the extracted PS4 game/update first. |
+| BIN / SFO / FARC | Components inside a complete game; do not select them individually. |
+| Engine EXE | Use Import existing in the engine panel. |
+| PNG / JPEG | Use artwork/background selection, not game import. |
+
+## Validate, launch and navigate
+
+After linking, press **Validate** and read missing-file/version/region messages. Return to the game's page and press **Play**. First LBPPC preparation, shader compilation and RPCS3 caches can take time. **Change folder** relinks moved data; **Unlink** removes its launcher reference without deleting it. Folder discovery finds possible installed games; inspect results before linking.
+
+| Page | Use |
+| --- | --- |
+| Home | Open games and return to recent activity. |
+| Library | Browse game details and star Favorites. |
+| Downloads | Install/import engines and maintain managed installations. |
+| Game files | Link/validate games and updates, import PS3 packages or discover folders. |
+| Settings | Appearance, video shortcuts, text, controls, storage, backups and diagnostics. |
+| About | Creator, project/engine links, licenses and privacy. |
+
+Wide windows have full navigation. Compact windows show the hamburger menu, which disappears when expanded. Playtime is local and counts the launched engine's lifetime, including preparation/open engine windows. Keep Patchwork Pod open until the engine closes.
+
+## Video and LBP settings
+
+Open **Video settings** on a game's page and enable overrides to apply them on the next Play. Standard video overrides are off by default.
+
+| Mode | Controls and limitations |
+| --- | --- |
+| LBPPC Standard | Resolution, display mode, FSR 1, keep engine FPS, 30 native or 60 displayed through supported frame generation. |
+| RPCS3 | Fullscreen, resolution scale and 30/60/120 caps. Caps alone do not unlock game FPS. |
+| LBPPC native rendering test | 60/120 targets, generation off, unmodified official 0.1.5 only, offline and separate test saves. Physics remains 30 Hz. |
+
+Version 1.5.0 also provides an **LBP starting profile** for RPCS3 color-buffer effects. Existing per-game color-buffer choices are respected, global configuration files remain intact and the profile can be disabled on the game page. CPU settings and Vblank timing are preserved. This is a starting configuration, not a guarantee of gameplay compatibility or performance.
+
+Experimental rendering does not implement 60/120 Hz simulation or world-motion interpolation. Character motion may still step at 30 Hz, and missed targets can change game speed. Read [native test instructions](NATIVE-TESTING.md) before testing; start with 60. Other graphics, controls, audio and accounts remain in **Open engine settings**.
+
+## Appearance and controls
+
+Settings includes theme-color/local-picture backgrounds; 0–24px picture blur; black/green and nine optional color pairs; panel opacity; Daytime/Nighttime/Follow Windows; Current/LBP Wiki text presets; 85–150% text scale; reduced motion and controller navigation. Wiki typography uses the existing licensed Rubik font with heavier headings.
+
+Game pages offer Custom artwork. Backgrounds/covers accept PNG/JPEG up to 8 MB and stay local. Reset/remove controls unlink artwork rather than securely erasing stored copies. Public builds contain no game pictures or proprietary game font files.
+
+Keyboard: Tab moves focus, Enter/Space activates. Optional controller navigation uses D-pad/left stick, A to select, B to return; Windows/WebView2 must expose the controller. Configure actual in-game mappings in the engine. Physical controller behavior and complete native accessibility checks remain unverified.
+
+## Downloads and maintenance
+
+Downloads show real progress, speed and errors. Cancel retains partial files; retry resumes only when server identity/range checks permit it. Automatic engine installation requires official SHA-256 verification.
+
+| Action | Behavior |
+| --- | --- |
+| Update / Repair | Reinstalls release files while retaining the previous engine and user-created/custom settings. |
+| Verify files | Compares recorded hashes; customized settings may legitimately differ. |
+| Move | Copies/verifies a managed engine; retains the original backup. |
+| Roll back | Uses the retained previous release; check upstream save/settings compatibility. |
+| Uninstall | Retains a managed installation as a timestamped sibling backup and removes its active reference. |
+| Forget | Removes an imported engine reference; its files stay user-managed. |
+
+Change Engine location affects new installations. Move existing managed engines through Downloads. Close running engines before maintenance. Backups consume disk space; inspect saves before manually deleting them.
+
+## Saves, backups and diagnostics
+
+Saves belong to their engines. **Launcher backups do not include game saves or artwork.** Use engine save tools while closed. Native-rendering tests use separate local native-tests/60 and native-tests/120 folders; use **Open test logs and saves**.
+
+Settings offers Back up (preferences/paths to JSON), Restore (retains current config and references restored engines as user-owned), Save diagnostics (local version/existence summary without paths/usernames/logs/credentials) and Open launcher settings folder. Revalidate restored paths and choose custom artwork again. No reports are automatically uploaded.
+
+Local data lives in `%LOCALAPPDATA%\com.patchworkpod.launcher`. Do not blindly delete the whole folder: default engines inside it may contain saves/accounts. Review [privacy and deletion instructions](../PRIVACY.md). Before downgrading from a native-test version to 1.3.0, select Standard rendering and save.
+
+Configured games can launch offline once prerequisites exist. Initial downloads need a network connection; engine online services have their own accounts/requirements. [Troubleshooting](TROUBLESHOOTING.md) · [Common questions](FAQ.md).
+
+Technical setup details and verification limits: [PS3 setup](PS3-SETUP.md).

@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 export type VideoConfig={enabled:boolean;resolution:string;display:string;targetFps:number;frameGeneration:string;upscaling:string;resolutionScale:number;rendering?:'standard'|'native-test'};
-export type Game={id:string;engine:string;data:string;update:string;titleId:string;region:string;version:string;favorite:boolean;seconds:number;lastPlayed:number;fullscreen:boolean;artwork:string;video?:VideoConfig};
+export type Game={id:string;engine:string;data:string;update:string;titleId:string;region:string;version:string;favorite:boolean;seconds:number;lastPlayed:number;fullscreen:boolean;ps3Compatibility?:boolean;artwork:string;video?:VideoConfig};
 export type Installation={engine:string;executable:string;version:string;managed:boolean;root:string;rollback:string};
 export type Config={schema:number;theme:string;palette:string;background:'picture'|'color';backgroundBlur:number;backgroundArtwork:string;panelOpacity:number;reducedMotion:boolean;textScale:number;typography?:'current'|'wiki';controller:boolean;onboarding:boolean;installRoot:string;games:Game[];installations:Record<string,Installation>;activity:string[]};
 export type Task={engine:string;version:string;status:string;downloaded:number;total:number;speed:number;error:string};

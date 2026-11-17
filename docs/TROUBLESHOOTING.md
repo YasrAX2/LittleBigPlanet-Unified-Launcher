@@ -1,6 +1,8 @@
 # Troubleshooting
 
 - **No native Windows download for LBP1/2:** LittleBigRecomp's observed build targets macOS arm64/Metal. RePlanet has no verified public release endpoint. Select RPCS3. Future native imports require an official Windows x64 executable; import support does not certify future game compatibility.
+- **Version 1.5.0 PKG import:** use Install PS3 PKG for LBP1/2. PS4 packages are refused. Updates/DLC need a matching installed base game. Required licenses must come from your own copy. A processed package is not proof that a game is playable.
+- **Version 1.5.0 firmware setup:** Prepare RPCS3 retries automatic installation. Checksum mismatch stops it; Install firmware file is the official local-PUP fallback. Custom RPCS3_CONFIG_DIR/VFS layouts may need setup in RPCS3.
 - **Missing firmware:** Open RPCS3 settings and install official PS3 firmware using RPCS3's instructions and PlayStation's source. The launcher checks the standard dev_flash/vsh/module/vsh.self path. For custom firmware locations, use RPCS3 directly until its standard installation is configured.
 - **Wrong folder / no PARAM.SFO:** Choose extracted game data, not an ISO, PKG or archive. For PS4 extractions, select the actual game root, not its parent wrapper. No decryption or game downloading is performed here.
 - **Wrong LBP3 update:** The update region must match the base game, currently CUSA00473 or CUSA00063. A combined 01.28 folder is accepted; a lower base version needs a complete separate update. LBPPC performs final game validation and preparation.
@@ -18,3 +20,7 @@ Settings offers a locally saved diagnostics report. Inspect it before voluntaril
 ## No official checksum
 
 Automatic installation refuses a release with no usable official SHA-256 checksum. Review the official project and use Import existing if you independently trust an installation. A checksum mismatch always stops installation.
+
+## Report a problem
+
+Include launcher/engine versions, game/title ID, exact error and whether Standard mode works. Settings can save a redacted local diagnostics summary. Inspect files before sharing. Do not upload game packages, firmware, licenses, account files or saves.

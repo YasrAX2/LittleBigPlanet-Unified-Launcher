@@ -452,7 +452,12 @@ pub fn start(app: tauri::AppHandle, engine: String) -> Result<()> {
     drop(busy);
     std::thread::spawn(move || {
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            install_release(&app, &engine, &flag)
+            install_release(&app, &engine, &flag)?;
+            if engine=="rpcs3" {
+                let c=app.state::<Store>().get();let i=c.installations.get("rpcs3").ok_or("RPCS3 installation reference missing")?;
+                crate::ps3::ensure_firmware(&app.state::<Store>().dir,i,|message|update(&app,&engine,|t|t.status=message.into()),Some(&flag))?;
+            }
+            Ok(())
         }))
         .unwrap_or_else(|_| {
             Err(

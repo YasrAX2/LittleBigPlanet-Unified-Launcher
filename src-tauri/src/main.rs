@@ -5,6 +5,7 @@ mod metadata;
 mod model;
 mod release;
 mod video;
+mod ps3;
 use tauri::Manager;
 fn main() {
     std::panic::set_hook(Box::new(|_| {
@@ -38,6 +39,8 @@ fn main() {
             commands::preferences,
             commands::pick,
             commands::import_data,
+            commands::import_ps3_package,
+            commands::prepare_ps3,
             commands::clear_data,
             commands::import_engine,
             commands::game_settings,

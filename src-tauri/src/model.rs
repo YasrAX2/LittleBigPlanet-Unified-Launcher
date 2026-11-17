@@ -30,6 +30,7 @@ pub struct Game {
     pub seconds: u64,
     pub last_played: u64,
     pub fullscreen: bool,
+    pub ps3_compatibility: bool,
     pub artwork: String,
     pub video: crate::video::VideoSettings,
 }
@@ -47,6 +48,7 @@ impl Default for Game {
             seconds: 0,
             last_played: 0,
             fullscreen: false,
+            ps3_compatibility: true,
             artwork: String::new(),
             video: Default::default(),
         }

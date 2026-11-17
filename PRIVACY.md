@@ -14,6 +14,10 @@ Automatic requirements and installed-engine release checks contact official GitH
 
 Installed games can be launched without release checks succeeding. Engine online features, accounts, telemetry and servers are controlled by the engine and its operators. Review their notices separately.
 
+## PS3 setup and local packages
+
+Version 1.5.0 downloads the pinned official PS3 firmware from Sony's published endpoint and verifies its SHA-256 before RPCS3 checks/installs it. Sony receives ordinary connection information. A PS3 PKG you select is passed locally to RPCS3; game packages and game licenses are never uploaded by the launcher. Installed games remain in RPCS3 storage. A generated LBP starting profile preserves original engine configuration files and custom per-game color-buffer choices.
+
 ## Engine settings and backups
 
 When you press Play, the LBPPC adapter updates the engine's local game paths. Optional video overrides also update selected video fields in `user/launcher.json` and `lbppc.ini`, preserving other fields and making local backups. Existing engine account fields remain in those files and their backups; the launcher does not send them to its developer. RPCS3 video overrides generate a separate launcher-owned profile from existing local settings. Treat engine folders and their backups as private.

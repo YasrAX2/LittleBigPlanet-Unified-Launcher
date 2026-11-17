@@ -95,6 +95,8 @@ pub async fn pick(kind: String) -> Result<Option<String>> {
                 .set_title("Choose the official Windows executable")
                 .add_filter("Windows executable", &["exe"])
                 .pick_file(),
+            "pkg" => d.set_title("Choose a PS3 game or update package").add_filter("PS3 package", &["pkg"]).pick_file(),
+            "pup" => d.set_title("Choose official PS3 firmware").add_filter("PS3 firmware", &["pup"]).pick_file(),
             "art" => d
                 .set_title("Choose your own artwork")
                 .add_filter("Artwork", &["png", "jpg", "jpeg"])
@@ -230,6 +232,7 @@ pub fn game_settings(s: tauri::State<Store>, id: String, changes: Value) -> Resu
         if let Some(v) = changes.get("favorite").and_then(Value::as_bool) {
             g.favorite = v
         }
+        if let Some(v)=changes.get("ps3Compatibility").and_then(Value::as_bool){g.ps3_compatibility=v;}
         if let Some(v) = changes.get("fullscreen").and_then(Value::as_bool) {
             g.fullscreen = v
         }
@@ -280,13 +283,8 @@ pub fn validate(s: &Store, id: &str) -> Result<metadata::Inspection> {
             r.valid = false;
             r.messages.push(e)
         }
-        if g.engine == "rpcs3"
-            && !Path::new(&i.root)
-                .join("dev_flash/vsh/module/vsh.self")
-                .is_file()
-        {
-            r.valid = false;
-            r.messages.push("PS3 firmware was not found in this RPCS3 installation. Open RPCS3 and install firmware from PlayStation's official source. Custom firmware paths must be configured in RPCS3.".into())
+        if g.engine == "rpcs3" && !crate::ps3::firmware_present(i)? {
+            r.valid=false;r.messages.push("PS3 firmware is missing. Choose Prepare RPCS3 to download, verify and install it automatically.".into());
         }
     } else {
         r.valid = false;
@@ -306,7 +304,7 @@ pub fn discover_games(s: tauri::State<Store>) -> Result<Vec<metadata::Inspection
         .installations
         .get("rpcs3")
         .ok_or("Import or install RPCS3 first.")?;
-    let root = Path::new(&i.root);
+    let root = crate::ps3::root(i)?;
     let mut paths = vec![];
     if let Ok(entries) = fs::read_dir(root.join("dev_hdd0/game")) {
         for e in entries.flatten().take(5000) {
@@ -448,7 +446,10 @@ fn sync_lbppc(i: &Installation, g: &Game) -> Result<()> {
     Ok(())
 }
 #[tauri::command]
-pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
+pub async fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
+    tauri::async_runtime::spawn_blocking(move||launch_inner(app,id,settings)).await.map_err(err)?
+}
+fn launch_inner(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
     let s = app.state::<Store>();
     idle(&s)?;
     let c = s.get();
@@ -464,6 +465,7 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
         .ok_or("Install or import the engine first.")?;
     metadata::windows_exe(Path::new(&i.executable))?;
     if !settings {
+        if g.engine=="rpcs3" && !crate::ps3::firmware_present(i)? { return Err("Choose Prepare RPCS3 before your first PS3 launch.".into()); }
         let check = validate(&s, &id)?;
         if !check.valid {
             return Err(check.messages.join("\n"));
@@ -473,7 +475,7 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
         }
     }
     let mut args = launch_args(&g, settings)?;
-    if !settings && g.engine=="rpcs3" && g.video.enabled {
+    if !settings && g.engine=="rpcs3" && (g.video.enabled||g.ps3_compatibility) {
         let profile=crate::video::rpcs3_profile(&s.dir,i,&g)?;
         args.splice(0..0,["--config".into(),profile.to_string_lossy().into()]);
     }
@@ -706,4 +708,45 @@ mod tests {
         assert_eq!(fs::read_to_string(d.path().join("lbppc.backup.ini")).unwrap(),"# original\nframe_gen=off\nserver=keep\n");
     }
 
+}
+
+#[tauri::command]
+pub async fn prepare_ps3(app: tauri::AppHandle, path: Option<String>) -> Result<String> {
+    tauri::async_runtime::spawn_blocking(move||{
+        let s=app.state::<Store>();idle(&s)?;
+        { let mut busy=s.busy.lock().map_err(err)?;if *busy{return Err("Another setup is running.".into());}*busy=true; }
+        let result=(||{
+            let c=s.get();let i=c.installations.get("rpcs3").ok_or("Install or import RPCS3 first.")?;
+            if let Some(path)=path {
+                let path=Path::new(&path);download::no_links(path)?;
+                if !path.extension().is_some_and(|v|v.eq_ignore_ascii_case("pup")) || fs::metadata(path).map_err(err)?.len()>512*1024*1024 { return Err("Choose an official PS3 firmware .PUP file under 512 MB.".into()); }
+                let mut magic=[0;8];use std::io::Read;fs::File::open(path).map_err(err)?.read_exact(&mut magic).map_err(err)?;
+                if &magic!=b"SCEUF\0\0\0"{return Err("Not a PS3 firmware PUP.".into());}
+                crate::ps3::run_installer(i,"--installfw",path)?;
+                if !crate::ps3::firmware_present(i)? { return Err("Firmware installation was not confirmed. Inspect RPCS3's log.".into()); }
+            }else{crate::ps3::ensure_firmware(&s.dir,i,|message|{let _=app.emit("setup",message);},None)?;}
+            Ok("RPCS3 firmware is ready. Add your LBP game folder or PS3 package.".into())
+        })();*s.busy.lock().map_err(err)?=false;result
+    }).await.map_err(err)?
+}
+#[tauri::command]
+pub async fn import_ps3_package(app: tauri::AppHandle, id: String, path: String) -> Result<String> {
+    tauri::async_runtime::spawn_blocking(move||{
+        if !["lbp1","lbp2"].contains(&id.as_str()){return Err("Only LBP1/2 PS3 packages are supported here. LBP3 needs extracted PS4 folders.".into());}
+        let s=app.state::<Store>();idle(&s)?;
+        let title=crate::ps3::package_title(Path::new(&path))?;
+        {let mut busy=s.busy.lock().map_err(err)?;if *busy{return Err("Another setup is running.".into());}*busy=true;}
+        let result=(||{
+            let c=s.get();let i=c.installations.get("rpcs3").ok_or("Install or import RPCS3 first.")?;
+            crate::ps3::ensure_firmware(&s.dir,i,|message|{let _=app.emit("setup",message);},None)?;
+            let _=app.emit("setup","Installing your PS3 package. Large packages can take several minutes...");
+            let installed=crate::ps3::root(i)?.join("dev_hdd0/game").join(&title);
+            let existed=installed.is_dir();
+            crate::ps3::run_installer(i,"--installpkg",Path::new(&path))?;
+            let r=metadata::inspect(&id,&installed,false,&requirements_cached(&s)).map_err(|_|"RPCS3 finished but no matching game folder was confirmed. Check its log. Updates/DLC need their base game installed first.".to_string())?;
+            if !r.valid {return Err("Package was processed, but it is not a complete matching LBP game. Check RPCS3's log; original package retained.".into());}
+            s.change(|c|{let g=game_mut(c,&id)?;g.engine="rpcs3".into();g.data=r.path;g.title_id=r.title_id;g.version=r.version;g.region=r.region;Ok(())})?;
+            Ok(if existed{"RPCS3 processed the package and the existing matching game is linked. Check RPCS3 for update/DLC details."}else{"Installed game folder found and linked. Some digital games still need your own game license in RPCS3."}.into())
+        })();*s.busy.lock().map_err(err)?=false;let _=app.emit("changed",());result
+    }).await.map_err(err)?
 }

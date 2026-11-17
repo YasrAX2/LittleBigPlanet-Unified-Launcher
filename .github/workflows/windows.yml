@@ -36,6 +36,7 @@ jobs:
           New-Item -ItemType Directory -Force release/portable | Out-Null
           Copy-Item src-tauri/target/release/patchwork-pod.exe release/portable/
           Copy-Item README.md,LICENSE,PRIVACY.md,THIRD-PARTY-NOTICES.md,THIRD-PARTY-LICENSES.txt,docs/IMAGE-SOURCES.md,docs/VIDEO.md,docs/NATIVE-TESTING.md release/portable/
+          Copy-Item docs release/portable/docs -Recurse
           Compress-Archive release/portable/* release/Patchwork-Pod-Windows-x64.zip
           Copy-Item src-tauri/target/release/bundle/nsis/*-setup.exe release/
           Get-ChildItem release -File | ForEach-Object { '{0}  {1}' -f (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower(), $_.Name } | Set-Content release/SHA256SUMS.txt
