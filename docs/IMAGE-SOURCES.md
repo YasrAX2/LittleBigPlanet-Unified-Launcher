@@ -1,5 +1,9 @@
 # Image sources
 
+## Current version 1.2.1
+
+The active backdrop is a solid CSS color: Popit green (#143e32), or darker green (#0d2c24) in night mode. No backdrop image or generated artwork is used. The forest photograph was removed from the application. Version 1.2 image records below are historical.
+
 ## Version 1.2 cover art
 
 The current game selectors and detail pages use covers, not gameplay screenshots:

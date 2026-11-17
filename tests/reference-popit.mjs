@@ -6,7 +6,7 @@ const browser=await chromium.connectOverCDP(process.env.POD_CDP??'http://127.0.0
 const page=browser.contexts()[0].pages()[0];
 const invoke=(command,args={})=>page.evaluate(({command,args})=>window.__TAURI_INTERNALS__.invoke(command,args),{command,args});
 const results=[];
-const directory='docs/screenshots-v1.2';
+const directory='docs/screenshots-v1.2.1';
 await fs.mkdir(directory,{recursive:true});
 await page.reload();await page.waitForSelector('.world-bubbles');
 await invoke('preferences',{changes:{palette:'black-green',panelOpacity:65,textScale:100,theme:'day'}});
@@ -81,7 +81,7 @@ await invoke('preferences',{changes:{textScale:150}});await page.reload();await 
 for(const width of[960,1280]){await page.setViewportSize({width,height:800});await navigate('Settings');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await scan(`Text 150 percent at ${width}`)}
 await invoke('preferences',{changes:{textScale:100,theme:'day',palette:'black-green',panelOpacity:65}});
 await page.reload();await page.waitForSelector('.world-bubbles');await page.setViewportSize({width:1280,height:800});
-assert.equal(await page.locator('.pod-backdrop img').getAttribute('src'),'/forest.jpg');
+assert.equal(await page.locator('.pod-backdrop img').count(),0);assert.equal(await page.locator('.pod-backdrop').evaluate(e=>getComputedStyle(e).backgroundImage),'none');
 await fs.writeFile('docs/reference-popit-results.json',JSON.stringify(results,null,2)+'\n');
 console.log(JSON.stringify(results.map(r=>({...r,violations:r.violations?.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}))})),null,2));
 await browser.close();
