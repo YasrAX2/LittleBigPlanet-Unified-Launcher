@@ -12,8 +12,8 @@
 | Dark patterns; fake reviews; unsupported claims | No fabricated testimonials or paid funnels. FPS caps are distinguished from game unlocks and generated frames. No guaranteed 120 FPS or legal/security immunity. |
 | Alt text; contrast; keyboard navigation | Named controls, keyboard focus, reduced motion, text scale and image alternatives retained. Video controls have labels and native fields. New native visual/keyboard/contrast review remains incomplete; no WCAG certification. [W3C guidance](https://www.w3.org/WAI/WCAG22/quickref/). |
 | Business details | Creator credited as yasrax2 with a public project link. No invented company, postal address or legal identity. |
-| Font/image licensing | Rubik's license and dependency notices are bundled. Public builds exclude game artwork and private screenshots. Local image import does not establish redistribution rights. [Artwork and distribution](LEGAL.md). |
+| Font/image licensing | Rubik's license and dependency notices are bundled. Public builds include the selected default game imagery, excluded from the MIT code license. Private version-history screenshots remain excluded. Local image import does not establish redistribution rights. [Artwork and distribution](LEGAL.md). |
 
-Old releases/tags v1.0.0, v1.1.0 and v1.2.0 were removed with the owner's permission. Public main and retained v1.2.1 start from an artwork-free source snapshot. Old UI pictures were archived privately on the owner's Desktop outside Git. GitHub caches, historic PR views and downloaded copies can remain.
+Old releases/tags v1.0.0, v1.1.0 and v1.2.0 were removed with the owner's permission. An earlier cleanup produced an artwork-free source snapshot. The owner subsequently requested public default artwork and retained only v1.3.0 stable and v1.5.0 prerelease. Old UI pictures were archived privately on the owner's Desktop outside Git. GitHub caches, historic PR views and downloaded copies can remain.
 
 This is a technical review. Legal duties depend on location and actual operations; a screenshot checklist cannot establish compliance.
