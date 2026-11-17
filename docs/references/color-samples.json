@@ -1,0 +1,65 @@
+[
+  {
+    "id": "red-burgundy",
+    "name": "Red & burgundy",
+    "top": "#cf1044",
+    "bottom": "#570f37",
+    "icon": "/colors/red-burgundy.png"
+  },
+  {
+    "id": "purple-black",
+    "name": "Purple & black",
+    "top": "#cd00d9",
+    "bottom": "#000000",
+    "icon": "/colors/purple-black.png"
+  },
+  {
+    "id": "pink-cream",
+    "name": "Pink & cream",
+    "top": "#f7e4e6",
+    "bottom": "#cad88d",
+    "icon": "/colors/pink-cream.png"
+  },
+  {
+    "id": "blue-grey",
+    "name": "Blue & grey",
+    "top": "#3091f8",
+    "bottom": "#c2baaf",
+    "icon": "/colors/blue-grey.png"
+  },
+  {
+    "id": "olive-maroon",
+    "name": "Olive & maroon",
+    "top": "#9e9047",
+    "bottom": "#45080f",
+    "icon": "/colors/olive-maroon.png"
+  },
+  {
+    "id": "amber-mint",
+    "name": "Amber & mint",
+    "top": "#f8ac4c",
+    "bottom": "#7edd81",
+    "icon": "/colors/amber-mint.png"
+  },
+  {
+    "id": "violet-green",
+    "name": "Violet & green",
+    "top": "#b162cd",
+    "bottom": "#40f6a3",
+    "icon": "/colors/violet-green.png"
+  },
+  {
+    "id": "peach-lavender",
+    "name": "Peach & lavender",
+    "top": "#f4a85a",
+    "bottom": "#adb3e3",
+    "icon": "/colors/peach-lavender.png"
+  },
+  {
+    "id": "cyan-yellow",
+    "name": "Cyan & yellow",
+    "top": "#47fffd",
+    "bottom": "#dbd908",
+    "icon": "/colors/cyan-yellow.png"
+  }
+]

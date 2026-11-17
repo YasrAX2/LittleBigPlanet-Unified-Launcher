@@ -1,13 +1,13 @@
-# Glass Popit redesign
+# Popit appearance and navigation
 
-Version 1.2 follows the user's Popit and wiki references:
+Version 1.2 follows the supplied Popit references:
 
-- Navigation opens from a labeled hamburger button. It starts closed, closes after selection, and supports Escape and native dialog focus handling. The former fixed right-side menu is removed.
-- Home and library entries use downloaded game cover art. Full images are contained rather than cut into screenshot circles. Detail pages use the same cover. Custom user artwork still takes precedence.
-- Menus, dialogs and content panels use translucent tinted backgrounds and backdrop blur. Eight color presets and a 55–95% opacity slider apply immediately and persist in launcher settings. The explicit launcher opacity setting controls this rendering; reduced motion remains supported separately.
-- Rubik replaces the former heading/body fonts. Fandom's default desktop font is documented as Rubik: https://community.fandom.com/f/p/4400000000003210774 . The supplied wiki screenshot was also used as a visual reference; the article itself refused automated fetching.
-- Appearance has a direct header shortcut. "My Pod" is renamed "Home" in navigation.
+- Black glass with green accents is the default. Nine optional color pairs use RGB samples and Sackboy silhouettes extracted from the supplied reference, in the same three-by-three order. The reference and samples are under references/. No AI imagery is used.
+- Below 1200 CSS pixels, a hamburger opens a modal navigation drawer. At 1200 and above, navigation stays visible and the hamburger disappears. Expanding closes an open drawer and its backdrop. Escape, focus handling and controller navigation remain supported. See the window-width principle in https://developer.android.com/develop/ui/views/layout/build-responsive-navigation .
+- Covers fill their outlines. Retail platform headers and packaging margins are cropped out. A real Unsplash forest photograph replaces the game screenshot backdrop. Assets are bundled for offline display; provenance is in IMAGE-SOURCES.md.
+- Translucent panels retain blur and a saved opacity control. Light color pairs use dark text and a light backing for contrast. The black default uses the selected opacity directly. Reduced motion is respected separately.
+- Rubik matches the supplied wiki typography reference. Fandom's desktop font is documented as Rubik: https://community.fandom.com/f/p/4400000000003210774 . The screenshot was used directly; the Popit article refused automated fetching.
 
-The existing configuration schema remains compatible. Legacy settings receive Cool Island and 65% opacity defaults. Unknown palette names and out-of-range opacity values are rejected without changing saved settings.
+Legacy configurations receive black/green and 65% defaults. Superseded draft palettes migrate to black/green without changing game paths, installations or saves. Configuration restore uses the same migration. Unsupported values are rejected before saving.
 
-Verification records: glass-popit-results.json. Actual desktop captures: screenshots-v1.2/. The checks cover four desktop sizes, menu opening/closing, all eight presets, persisted opacity/color, favorites, game pages and 150% text. Accessibility scans cover all six pages in both display modes and all preset colors. As before, automated scans are not a complete accessibility audit. Gameplay and physical-controller tests remain unavailable.
+Verification: reference-popit-results.json and screenshots-v1.2/. Desktop WebView checks cover six widths, the breakpoint boundary, drawer expansion/Escape, ten choices, exact color tokens, image loading, persistence, all six pages in both display modes, game detail pages and 150% text. The 24 automated accessibility scans found no violations; they are not a complete accessibility audit. Native maximize/restore behavior is recorded in native-window-results.json. Gameplay and physical controllers remain untested in this version.

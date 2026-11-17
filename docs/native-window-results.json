@@ -1,0 +1,46 @@
+[
+  {
+    "mode": "compact",
+    "maximized": "False",
+    "state": {
+      "width": 1004,
+      "height": 761,
+      "menu": true,
+      "navigation": false,
+      "modal": false
+    }
+  },
+  {
+    "mode": "maximize",
+    "maximized": "True",
+    "state": {
+      "width": 1920,
+      "height": 1017,
+      "menu": false,
+      "navigation": true,
+      "modal": false
+    }
+  },
+  {
+    "mode": "compact",
+    "maximized": "False",
+    "state": {
+      "width": 1004,
+      "height": 761,
+      "menu": true,
+      "navigation": false,
+      "modal": false
+    }
+  },
+  {
+    "mode": "restore",
+    "maximized": "False",
+    "state": {
+      "width": 1284,
+      "height": 761,
+      "menu": false,
+      "navigation": true,
+      "modal": false
+    }
+  }
+]

@@ -9,9 +9,9 @@ export type Release={engine:string;version:string;page:string;notes:string;asset
 export type Inspection={path:string;titleId:string;title:string;region:string;version:string;valid:boolean;messages:string[]};
 export const call=<T=unknown>(command:string,args:Record<string,unknown>={})=>invoke<T>(command,args);
 export const catalog=[
- {id:'lbp1',cover:'/covers/lbp1.jpg',title:'LittleBigPlanet',subtitle:'PlayStation 3 · 2008',native:'LittleBigRecomp currently targets Apple Silicon macOS with Metal. Use RPCS3 on Windows.',source:'lbprecomp',badge:'RPCS3'},
- {id:'lbp2',cover:'/covers/lbp2.webp',title:'LittleBigPlanet 2',subtitle:'PlayStation 3 · 2011',native:'RePlanet is in development. No verified public Windows release source is configured. Use RPCS3 today.',source:'replanet',badge:'RPCS3'},
- {id:'lbp3',cover:'/covers/lbp3.jpg',title:'LittleBigPlanet 3',subtitle:'PlayStation 4 · 2014',native:'LBPPC is a public native Windows beta. Its own launcher handles graphics, controls, saves and online accounts.',source:'lbppc',badge:'Native · LBPPC'},
+ {id:'lbp1',cover:'/covers/lbp1-art.webp',title:'LittleBigPlanet',subtitle:'PlayStation 3 · 2008',native:'LittleBigRecomp currently targets Apple Silicon macOS with Metal. Use RPCS3 on Windows.',source:'lbprecomp',badge:'RPCS3'},
+ {id:'lbp2',cover:'/covers/lbp2-art.webp',title:'LittleBigPlanet 2',subtitle:'PlayStation 3 · 2011',native:'RePlanet is in development. No verified public Windows release source is configured. Use RPCS3 today.',source:'replanet',badge:'RPCS3'},
+ {id:'lbp3',cover:'/covers/lbp3-art.webp',title:'LittleBigPlanet 3',subtitle:'PlayStation 4 · 2014',native:'LBPPC is a public native Windows beta. Its own launcher handles graphics, controls, saves and online accounts.',source:'lbppc',badge:'Native · LBPPC'},
 ];
 export const engineName=(s:string)=>({rpcs3:'RPCS3',lbppc:'LBPPC',lbprecomp:'LittleBigRecomp',replanet:'RePlanet'}[s]??s);
 export const bytes=(n:number)=>n>=1073741824?`${(n/1073741824).toFixed(1)} GB`:n>=1048576?`${(n/1048576).toFixed(1)} MB`:`${Math.round(n/1024)} KB`;

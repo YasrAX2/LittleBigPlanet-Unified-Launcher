@@ -1,11 +1,75 @@
+// Colors sampled from docs/references/player-colors.png; see color-samples.json.
 export const palettes = [
- {id:'cool-island',name:'Cool Island',top:'#247f93',bottom:'#265c47'},
- {id:'ocean',name:'Ocean',top:'#246aa7',bottom:'#173b69'},
- {id:'grape',name:'Grape',top:'#7958a3',bottom:'#3d325e'},
- {id:'berry',name:'Berry',top:'#a04b73',bottom:'#5b2944'},
- {id:'sunshine',name:'Sunshine',top:'#9d7821',bottom:'#55491c'},
- {id:'sand',name:'Sand',top:'#8b7558',bottom:'#453d32'},
- {id:'mint',name:'Mint',top:'#2d876d',bottom:'#184f49'},
- {id:'midnight',name:'Midnight',top:'#334761',bottom:'#15243d'},
+ {
+  "id": "black-green",
+  "name": "Black & green",
+  "top": "#080b0a",
+  "bottom": "#080b0a",
+  "accent": "#40f6a3",
+  "icon": "/colors/black-green.png"
+ },
+ {
+  "id": "red-burgundy",
+  "name": "Red & burgundy",
+  "top": "#cf1044",
+  "bottom": "#570f37",
+  "icon": "/colors/red-burgundy.png"
+ },
+ {
+  "id": "purple-black",
+  "name": "Purple & black",
+  "top": "#cd00d9",
+  "bottom": "#000000",
+  "icon": "/colors/purple-black.png"
+ },
+ {
+  "id": "pink-cream",
+  "name": "Pink & cream",
+  "top": "#f7e4e6",
+  "bottom": "#cad88d",
+  "icon": "/colors/pink-cream.png"
+ },
+ {
+  "id": "blue-grey",
+  "name": "Blue & grey",
+  "top": "#3091f8",
+  "bottom": "#c2baaf",
+  "icon": "/colors/blue-grey.png"
+ },
+ {
+  "id": "olive-maroon",
+  "name": "Olive & maroon",
+  "top": "#9e9047",
+  "bottom": "#45080f",
+  "icon": "/colors/olive-maroon.png"
+ },
+ {
+  "id": "amber-mint",
+  "name": "Amber & mint",
+  "top": "#f8ac4c",
+  "bottom": "#7edd81",
+  "icon": "/colors/amber-mint.png"
+ },
+ {
+  "id": "violet-green",
+  "name": "Violet & green",
+  "top": "#b162cd",
+  "bottom": "#40f6a3",
+  "icon": "/colors/violet-green.png"
+ },
+ {
+  "id": "peach-lavender",
+  "name": "Peach & lavender",
+  "top": "#f4a85a",
+  "bottom": "#adb3e3",
+  "icon": "/colors/peach-lavender.png"
+ },
+ {
+  "id": "cyan-yellow",
+  "name": "Cyan & yellow",
+  "top": "#47fffd",
+  "bottom": "#dbd908",
+  "icon": "/colors/cyan-yellow.png"
+ }
 ] as const;
 export const paletteById=(id:string)=>palettes.find(p=>p.id===id)??palettes[0];

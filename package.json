@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:ui": "node tests/glass-popit.mjs"
+    "test:ui": "node tests/reference-popit.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.0",

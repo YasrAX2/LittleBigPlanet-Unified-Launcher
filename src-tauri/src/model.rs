@@ -81,7 +81,7 @@ impl Default for Config {
         Self {
             schema: 1,
             theme: "day".into(),
-            palette: "cool-island".into(),
+            palette: "black-green".into(),
             panel_opacity: 65,
             reduced_motion: false,
             text_scale: 100,
@@ -123,6 +123,7 @@ impl Store {
         } else {
             Config::default()
         };
+        migrate_appearance(&mut c);
         validate_config(&c)?;
         if c.install_root.is_empty() {
             c.install_root = dir.join("engines").to_string_lossy().into()
@@ -148,13 +149,18 @@ impl Store {
         self.config.lock().unwrap().clone()
     }
 }
+pub fn migrate_appearance(c: &mut Config) {
+    if ["cool-island", "ocean", "grape", "berry", "sunshine", "sand", "mint", "midnight"].contains(&c.palette.as_str()) {
+        c.palette = "black-green".into();
+    }
+}
 pub fn validate_config(c: &Config) -> Result<()> {
     if c.schema != 1
         || c.games.len() != 3
         || !["day", "night", "system"].contains(&c.theme.as_str())
         || !(85..=150).contains(&c.text_scale)
         || !(55..=95).contains(&c.panel_opacity)
-        || !["cool-island", "ocean", "grape", "berry", "sunshine", "sand", "mint", "midnight"].contains(&c.palette.as_str())
+        || !["black-green", "red-burgundy", "purple-black", "pink-cream", "blue-grey", "olive-maroon", "amber-mint", "violet-green", "peach-lavender", "cyan-yellow"].contains(&c.palette.as_str())
     {
         return Err("Unsupported configuration.".into());
     }
@@ -197,12 +203,23 @@ pub fn game_mut<'a>(c: &'a mut Config, id: &str) -> Result<&'a mut Game> {
 mod appearance_tests {
     use super::*;
     #[test]
+    fn legacy_palette_migrates_without_changing_game_paths() {
+        let temp = tempfile::tempdir().unwrap();
+        let mut config = Config::default();
+        config.palette = "grape".into();
+        config.games[0].data = "C:\\Games\\LBP".into();
+        atomic_json(&temp.path().join("config.json"), &config, false).unwrap();
+        let saved = Store::open(temp.path().into()).unwrap().get();
+        assert_eq!(saved.palette, "black-green");
+        assert_eq!(saved.games[0].data, config.games[0].data);
+    }
+    #[test]
     fn legacy_configuration_gets_appearance_defaults() {
         let mut json=serde_json::to_value(Config::default()).unwrap();
         json.as_object_mut().unwrap().remove("palette");
         json.as_object_mut().unwrap().remove("panelOpacity");
         let old:Config=serde_json::from_value(json).unwrap();
-        assert_eq!(old.palette,"cool-island");
+        assert_eq!(old.palette,"black-green");
         assert_eq!(old.panel_opacity,65);
         validate_config(&old).unwrap();
     }
@@ -210,12 +227,12 @@ mod appearance_tests {
     fn appearance_persists_and_rejects_invalid_values() {
         let dir=tempfile::tempdir().unwrap();
         let store=Store::open(dir.path().into()).unwrap();
-        store.change(|c|{c.palette="grape".into();c.panel_opacity=65;Ok(())}).unwrap();
+        store.change(|c|{c.palette="purple-black".into();c.panel_opacity=65;Ok(())}).unwrap();
         let saved=Store::open(dir.path().into()).unwrap().get();
-        assert_eq!((saved.palette.as_str(),saved.panel_opacity),("grape",65));
+        assert_eq!((saved.palette.as_str(),saved.panel_opacity),("purple-black",65));
         assert!(store.change(|c|{c.palette="invalid".into();Ok(())}).is_err());
         assert!(store.change(|c|{c.panel_opacity=0;Ok(())}).is_err());
-        assert_eq!(store.get().palette,"grape");
+        assert_eq!(store.get().palette,"purple-black");
         assert_eq!(store.get().panel_opacity,65);
     }
 }
