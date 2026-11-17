@@ -4,7 +4,7 @@ Updated 17 November 2026. Patchwork Pod is a free, unofficial Windows launcher c
 
 ## Information on your PC
 
-The launcher stores preferences, selected game/engine paths, game identifiers, favorites, playtime, recent launcher activity and imported pictures in `%LOCALAPPDATA%/com.patchworkpod.launcher`. It also caches engine release information, compatibility requirements and download state. Pictures are copied locally and are not uploaded. The launcher has no account system, advertising or analytics SDK.
+The launcher stores preferences, selected game/engine paths, game identifiers, favorites, playtime, recent launcher activity and imported pictures in `%LOCALAPPDATA%/com.patchworkpod.launcher`. It also caches engine release information, compatibility requirements and download state. Custom imported pictures are copied locally and are not uploaded. Default artwork is bundled publicly with the application. The launcher has no account system, advertising or analytics SDK.
 
 Configuration backups and exported files remain at the location you choose. Configuration backups contain local paths. Diagnostics contain engine versions, game identifiers and existence checks; they omit paths, usernames, artwork, logs and credentials. Nothing is sent automatically. Review any file before sharing it publicly.
 
@@ -20,7 +20,7 @@ When you press Play, the LBPPC adapter updates the engine's local game paths. Op
 
 ## Remove your local data
 
-Settings provides an **Open launcher settings folder** button. Close the launcher before deleting `config.json`, `config.backup.json`, `art`, `video`, cached requirements/release metadata or launcher download records. This resets preferences and removes local launcher copies of images. The **Remove local picture** and **Reset artwork** buttons unlink images; they do not securely erase stored copies or backups.
+Settings provides an **Open launcher settings folder** button. Close the launcher before deleting `config.json`, `config.backup.json`, `art`, `video`, cached requirements/release metadata or launcher download records. This resets preferences and removes local launcher copies of imported images. Bundled default pictures remain available in the application. The **Remove local picture** and **Reset artwork** buttons unlink images; they do not securely erase stored copies or backups.
 
 Do not delete the whole application folder blindly: its `engines` folder can contain installed engines, accounts and saves. Game data in other folders is not removed when launcher preferences are reset. You control separately exported backups, retained engine backups and any copies you shared. Standard deletion does not guarantee secure erasure.
 

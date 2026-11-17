@@ -32,20 +32,51 @@ fn local_artwork(dir: &Path, name: &str, id: &str, limit: u64) -> Option<String>
         else if bytes.starts_with(&[0xff, 0xd8, 0xff]) { "image/jpeg" } else { return None; };
     Some(format!("data:{mime};base64,{}", base64::engine::general_purpose::STANDARD.encode(bytes)))
 }
+fn default_artwork(id: &str) -> Option<String> {
+    let bytes: &[u8]=match id {
+        "background" => include_bytes!("../assets/default-art/background.png"),
+        "lbp1" => include_bytes!("../assets/default-art/lbp1.png"),
+        "lbp2" => include_bytes!("../assets/default-art/lbp2.png"),
+        "lbp3" => include_bytes!("../assets/default-art/lbp3.png"),
+        "palette-amber-mint" => include_bytes!("../assets/default-art/palette-amber-mint.png"),
+        "palette-black-green" => include_bytes!("../assets/default-art/palette-black-green.png"),
+        "palette-blue-grey" => include_bytes!("../assets/default-art/palette-blue-grey.png"),
+        "palette-cyan-yellow" => include_bytes!("../assets/default-art/palette-cyan-yellow.png"),
+        "palette-olive-maroon" => include_bytes!("../assets/default-art/palette-olive-maroon.png"),
+        "palette-peach-lavender" => include_bytes!("../assets/default-art/palette-peach-lavender.png"),
+        "palette-pink-cream" => include_bytes!("../assets/default-art/palette-pink-cream.png"),
+        "palette-purple-black" => include_bytes!("../assets/default-art/palette-purple-black.png"),
+        "palette-red-burgundy" => include_bytes!("../assets/default-art/palette-red-burgundy.png"),
+        "palette-violet-green" => include_bytes!("../assets/default-art/palette-violet-green.png"),
+        _=>return None,
+    };
+    Some(format!("data:image/png;base64,{}",base64::engine::general_purpose::STANDARD.encode(bytes)))
+}
 #[tauri::command]
 pub fn snapshot(s: tauri::State<Store>) -> Value {
     let c = s.get();
-    let artwork: serde_json::Map<String,Value> = c.games.iter().filter_map(|g|local_artwork(&s.dir,&g.artwork,&g.id,8*1024*1024).map(|v|(g.id.clone(),json!(v)))).collect();
+    let artwork: serde_json::Map<String,Value> = c.games.iter().filter_map(|g|local_artwork(&s.dir,&g.artwork,&g.id,8*1024*1024).or_else(||default_artwork(&g.id)).map(|v|(g.id.clone(),json!(v)))).collect();
     let palette_artwork: serde_json::Map<String,Value> = PALETTE_IDS.iter().filter_map(|id|{
         let key=format!("palette-{id}");
-        local_artwork(&s.dir,&format!("{key}.png"),&key,64*1024).map(|v|(id.to_string(),json!(v)))
+        local_artwork(&s.dir,&format!("{key}.png"),&key,64*1024).or_else(||default_artwork(&key)).map(|v|(id.to_string(),json!(v)))
     }).collect();
-    let background_artwork=local_artwork(&s.dir,&c.background_artwork,"background",8*1024*1024);
+    let background_artwork=local_artwork(&s.dir,&c.background_artwork,"background",8*1024*1024).or_else(||default_artwork("background"));
     json!({"config":c,"backgroundArtwork":background_artwork,"paletteArtwork":palette_artwork,"tasks":s.tasks.lock().unwrap().values().cloned().collect::<Vec<_>>(),"running":*s.running.lock().unwrap(),"requirements":requirements_cached(&s),"artwork":artwork})
+}
+fn reset_look(c: &mut Config) {
+    let defaults=Config::default();
+    c.theme=defaults.theme;
+    c.palette=defaults.palette;
+    c.background=defaults.background;
+    c.background_blur=defaults.background_blur;
+    c.panel_opacity=defaults.panel_opacity;
+    c.background_artwork.clear();
+    for g in &mut c.games { g.artwork.clear(); }
 }
 #[tauri::command]
 pub fn preferences(s: tauri::State<Store>, changes: Value) -> Result<Config> {
     s.change(|c| {
+        if changes.get("resetLook").and_then(Value::as_bool)==Some(true) { reset_look(c); }
         if let Some(v) = changes.get("theme").and_then(Value::as_str) {
             c.theme = v.into()
         }
@@ -693,4 +724,31 @@ mod tests {
         assert_eq!(fs::read_to_string(d.path().join("lbppc.backup.ini")).unwrap(),"# original\nframe_gen=off\nserver=keep\n");
     }
 
+}
+
+#[cfg(test)]
+mod default_art_tests {
+    use super::*;
+    #[test]
+    fn bundled_images_cover_all_games_background_and_palettes() {
+        for id in ["lbp1","lbp2","lbp3","background"].iter().map(|s|s.to_string()).chain(PALETTE_IDS.iter().map(|s|format!("palette-{s}"))) {
+            let uri=default_artwork(&id).unwrap();
+            let bytes=base64::engine::general_purpose::STANDARD.decode(uri.strip_prefix("data:image/png;base64,").unwrap()).unwrap();
+            assert!(bytes.starts_with(b"\x89PNG\r\n\x1a\n"));
+        }
+        assert!(default_artwork("../config.json").is_none());
+    }
+    #[test]
+    fn reset_look_preserves_game_data_and_accessibility() {
+        let mut c=Config::default();
+        c.theme="night".into();c.background="color".into();c.background_artwork="background.png".into();
+        c.games[0].artwork="lbp1.png".into();c.games[0].data="C:\\Games\\LBP".into();
+        c.games[0].favorite=true;c.text_scale=120;c.reduced_motion=true;
+        let expected_path=c.games[0].data.clone();
+        reset_look(&mut c);
+        assert_eq!(c.background,"picture");assert_eq!(c.panel_opacity,55);
+        assert!(c.background_artwork.is_empty());assert!(c.games[0].artwork.is_empty());
+        assert_eq!(c.games[0].data,expected_path);assert!(c.games[0].favorite);
+        assert_eq!(c.text_scale,120);assert!(c.reduced_motion);
+    }
 }

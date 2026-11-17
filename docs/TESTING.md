@@ -6,7 +6,7 @@ The frontend production build passes. npm audit reports zero vulnerabilities; OS
 
 No gameplay FPS measurement or complete native visual/keyboard/contrast check was performed for this update. Desktop control was stopped during the earlier visual review. Selected FPS is an engine request, not a performance measurement. The Windows app is unsigned.
 
-Public packages contain no game artwork. Private version-history screenshots remain outside Git. See [video controls](VIDEO.md), [privacy](../PRIVACY.md) and [checklist review](CHECKLIST-REVIEW.md).
+Updated packages embed the 14 approved default pictures; their inventory and hashes are checked by tests. Private version-history screenshots remain outside Git. See [video controls](VIDEO.md), [privacy](../PRIVACY.md) and [checklist review](CHECKLIST-REVIEW.md).
 
 ---
 
@@ -36,3 +36,5 @@ No owned game dumps, firmware, live online accounts or physical game controller 
 Run `npm test`, `npm run build` and `cargo test --manifest-path src-tauri/Cargo.toml --locked`. Build a debug app with `PATCHWORK_TEST_HOME` set to an isolated writable directory and WebView2 debug arguments `--remote-debugging-port=9223`; run `npm run dev` and start the app. `node tests/desktop.mjs` performs real engine downloads; it requires Internet access and disk space. `node tests/visual-check.mjs` captures all sections and runs accessibility scans. `tests/process-check.mjs` expects a separately built two-second fixture executable under the adjacent fixtures/engine directory. These test/debug settings are not enabled in shipped release configuration.
 
 Packaged release smoke test: the compiled app loaded its bundled frontend at tauri.localhost and displayed all three library cards with the WebView2 network set offline. Both official engine settings windows also opened during desktop integration testing. This does not establish real-game offline playability.
+
+Default-art refresh: the dependency audit now reports [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), an unpatched picomatch glob ReDoS affecting development tools. The audit accepts this advisory only for dependencies marked dev-only in the lockfile. Build/test globs are fixed in the repository; the packaged launcher includes no Node.js build tools and accepts no user globs. All other advisories still fail the build. Remove this exception when an upstream fix is available.

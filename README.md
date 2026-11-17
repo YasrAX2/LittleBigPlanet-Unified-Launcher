@@ -2,7 +2,7 @@
 
 **LittleBigPlanet Unified Launcher** for Windows. Created by **yasrax2**.
 
-An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.3.0 adds per-game video settings. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds contain no game artwork, game data, firmware, keys or music.
+An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.3.0 adds per-game video settings. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds include the selected default background, covers and Popit icons. No game data, firmware, keys or music are bundled.
 
 ## Download
 
@@ -49,3 +49,11 @@ See [privacy notice](PRIVACY.md), [artwork and distribution](docs/LEGAL.md), [im
 [Upstream research](docs/UPSTREAM.md), [third-party notices](THIRD-PARTY-NOTICES.md), [security policy](SECURITY.md), [security review](docs/SECURITY-REVIEW-1.2.1.md) and [verification](docs/TESTING.md).
 
 Unofficial fan project, not affiliated with or endorsed by Sony Interactive Entertainment, Media Molecule or Sumo Digital. LittleBigPlanet and related trademarks belong to their owners. The MIT code license grants no rights to their games or artwork.
+
+### Default appearance
+
+New installs use the included Sackboy background with 8 px blur, black-and-green colors and 55% panel opacity. Existing users can select **Settings > Restore default look**. This resets appearance only; game paths, saves and accessibility settings remain unchanged. Custom imported pictures stay local. Artwork credits and ownership are described in [image sources](docs/IMAGE-SOURCES.md).
+
+## Contributors
+
+**yasrax2** created the launcher and directed its features and design. **shawarma1m8ly** suggested the original idea for this LBP PC launcher. Development used AI assistance for implementation, debugging, research and documentation. See [contributor credits](CONTRIBUTORS.md).
