@@ -232,6 +232,12 @@ pub fn game_settings(s: tauri::State<Store>, id: String, changes: Value) -> Resu
         if let Some(v) = changes.get("fullscreen").and_then(Value::as_bool) {
             g.fullscreen = v
         }
+        if let Some(patch) = changes.get("video") {
+            let patch=patch.as_object().ok_or("Video changes must be an object.")?;
+            let mut value=serde_json::to_value(&g.video).map_err(err)?;
+            for (key,value_patch) in patch { value.as_object_mut().unwrap().insert(key.clone(),value_patch.clone()); }
+            g.video=serde_json::from_value(value).map_err(|_|"Invalid video settings.")?;
+        }
         if let Some(v) = changes.get("engine").and_then(Value::as_str) {
             let allowed = match id.as_str() {
                 "lbp1" => ["rpcs3", "lbprecomp"],
@@ -243,6 +249,7 @@ pub fn game_settings(s: tauri::State<Store>, id: String, changes: Value) -> Resu
             }
             g.engine = v.into()
         }
+        if !["rpcs3","lbppc"].contains(&g.engine.as_str()) { g.video.enabled=false; }
         Ok(())
     })
 }
@@ -415,6 +422,14 @@ fn sync_lbppc(i: &Installation, g: &Game) -> Result<()> {
     let root = Path::new(&i.root);
     let path = root.join("user/launcher.json");
     download::no_links(&path)?;
+    if path.exists() && fs::metadata(&path).map_err(err)?.len()>4*1024*1024 { return Err("LBPPC settings exceed 4 MB.".into()); }
+    let ini=root.join("lbppc.ini");
+    let ini_text=if g.video.enabled && g.video.frame_gen().is_some() {
+        download::no_links(&ini)?;
+        if ini.exists() && fs::metadata(&ini).map_err(err)?.len()>1024*1024 { return Err("LBPPC INI exceeds 1 MB.".into()); }
+        let text=if ini.exists() { fs::read_to_string(&ini).map_err(|_|"LBPPC INI cannot be read; refusing to overwrite it.")? } else { String::new() };
+        Some(crate::video::frame_gen_ini(&text,g.video.frame_gen().unwrap()))
+    } else { None };
     let mut data = if path.exists() {
         serde_json::from_slice::<Value>(&fs::read(&path).map_err(err)?)
             .map_err(|_| "LBPPC settings cannot be read; refusing to overwrite them.")?
@@ -426,7 +441,10 @@ fn sync_lbppc(i: &Installation, g: &Game) -> Result<()> {
         .ok_or("Unexpected LBPPC settings format.")?;
     o.insert("game".into(), json!(g.data));
     o.insert("update".into(), json!(g.update));
-    atomic_json(&path, &data, true)
+    crate::video::patch_lbppc(&mut data,&g.video)?;
+    atomic_json(&path, &data, true)?;
+    if let Some(text)=ini_text { atomic_text(&ini,&text,true)?; }
+    Ok(())
 }
 #[tauri::command]
 pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
@@ -453,7 +471,11 @@ pub fn launch(app: tauri::AppHandle, id: String, settings: bool) -> Result<()> {
             sync_lbppc(i, &g)?;
         }
     }
-    let args = launch_args(&g, settings)?;
+    let mut args = launch_args(&g, settings)?;
+    if !settings && g.engine=="rpcs3" && g.video.enabled {
+        let profile=crate::video::rpcs3_profile(&s.dir,i,&g)?;
+        args.splice(0..0,["--config".into(),profile.to_string_lossy().into()]);
+    }
     let mut child = Command::new(&i.executable)
         .args(args)
         .current_dir(&i.root)
@@ -534,6 +556,7 @@ pub fn open_link(key: String) -> Result<()> {
         }
         "rpcs3" => "https://rpcs3.net/quickstart",
         "firmware" => "https://www.playstation.com/en-us/support/hardware/ps3/system-software/",
+        "privacy" => "https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/blob/main/PRIVACY.md",
         "project" => "https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher",
         _ => return Err("Unknown link".into()),
     };
@@ -655,4 +678,19 @@ mod tests {
         assert_eq!(v["resolution"], "1920x1080");
         assert_eq!(v["game"], "new");
     }
+    #[test]
+    fn native_video_sync_updates_both_files_and_keeps_private_fields() {
+        let d=tempfile::tempdir().unwrap();
+        fs::create_dir(d.path().join("user")).unwrap();
+        atomic_json(&d.path().join("user/launcher.json"),&json!({"password_protected":"opaque","frame_gen":"off","controls":"keep"}),false).unwrap();
+        fs::write(d.path().join("lbppc.ini"),"# original\nframe_gen=off\nserver=keep\n").unwrap();
+        let i=Installation{root:d.path().to_string_lossy().into(),..Default::default()};
+        let g=Game{engine:"lbppc".into(),video:crate::video::VideoSettings{enabled:true,target_fps:60,..Default::default()},..Default::default()};
+        sync_lbppc(&i,&g).unwrap();
+        let v:Value=serde_json::from_slice(&fs::read(d.path().join("user/launcher.json")).unwrap()).unwrap();
+        assert_eq!(v["password_protected"],"opaque");assert_eq!(v["controls"],"keep");assert_eq!(v["frame_gen"],"fsr3");
+        assert_eq!(fs::read_to_string(d.path().join("lbppc.ini")).unwrap(),"# original\nserver=keep\nframe_gen=fsr3\n");
+        assert_eq!(fs::read_to_string(d.path().join("lbppc.backup.ini")).unwrap(),"# original\nframe_gen=off\nserver=keep\n");
+    }
+
 }

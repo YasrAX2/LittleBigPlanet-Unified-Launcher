@@ -1,3 +1,15 @@
+# Version 1.3.0 verification
+
+17 November 2026: 8 frontend tests and 30 Rust tests pass. Coverage includes unsupported FPS validation, legacy defaults, preservation of LBPPC account/control fields while synchronizing JSON/INI, RPCS3 custom/global profile merging and preservation of original files and Vblank timing.
+
+The frontend production build passes. npm audit reports zero vulnerabilities; OSV reports zero advisories in 295 packages in the Windows target graph. A medium glib advisory remains in non-Windows dependencies; it is not dismissed or represented as fixed.
+
+No gameplay FPS measurement or complete native visual/keyboard/contrast check was performed for this update. Desktop control was stopped during the earlier visual review. Selected FPS is an engine request, not a performance measurement. The Windows app is unsigned.
+
+Public packages contain no game artwork. Private version-history screenshots remain outside Git. See [video controls](VIDEO.md), [privacy](../PRIVACY.md) and [checklist review](CHECKLIST-REVIEW.md).
+
+---
+
 # Verification record
 
 Tested on Windows x64, 2026-11-16. No commercial game data was used and no real game playthrough is claimed.

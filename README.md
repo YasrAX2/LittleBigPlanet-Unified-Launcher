@@ -1,16 +1,14 @@
 # Patchwork Pod
 
-**LittleBigPlanet Unified Launcher** for Windows.
+**LittleBigPlanet Unified Launcher** for Windows. Created by **yasrax2**.
 
-Created by **yasrax2**.
-
-An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.2.1 offers local pictures with adjustable blur or a solid background matching the selected theme, local game covers, responsive navigation, translucent black/green Popit panels, nine reference color pairs and Rubik typography. No game data, firmware or music is included. Image sources and rights are recorded in [IMAGE-SOURCES.md](docs/IMAGE-SOURCES.md); game visuals are excluded from the MIT license.
+An independent fan launcher built with Rust, Tauri 2, React and TypeScript. Version 1.3.0 adds per-game video settings. It retains translucent Popit panels, black/green defaults, nine reference color pairs, local pictures with adjustable blur, local game covers, responsive navigation and licensed Rubik typography. Public builds contain no game artwork, game data, firmware, keys or music.
 
 ## Download
 
-[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Download the SHA256SUMS file to verify your files. See [installation and use](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and the [1.2.1 background choices](docs/REDESIGN-1.2.1.md) and [backend verification](docs/TESTING.md). The app is unsigned. Game compatibility is determined by the upstream engine.
+[Windows installer and portable ZIP](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest). Use SHA256SUMS to verify downloads. The application is unsigned. See [usage](docs/USAGE.md), [troubleshooting](docs/TROUBLESHOOTING.md) and [video settings](docs/VIDEO.md).
 
-Background options: the supplied Sackboy picture with adjustable blur (0–24px), or a solid theme color.
+Background choices: a picture you import locally with 0-24px blur, or a solid color matching your selected theme. Imported artwork stays on your PC.
 
 ## Supported engines
 
@@ -18,13 +16,15 @@ Background options: the supplied Sackboy picture with adjustable blur (0–24px), 
 | --- | --- | --- |
 | LittleBigPlanet | RPCS3, extracted PS3 game folders | LittleBigRecomp currently targets Apple Silicon macOS; future official Windows builds can be discovered/imported |
 | LittleBigPlanet 2 | RPCS3, extracted PS3 game folders | RePlanet has no verified public release endpoint; future official Windows executables can be imported |
-| LittleBigPlanet 3 | LBPPC official GitHub Windows release | US CUSA00473 and Europe CUSA00063, game update 1.28 as checked 2026-11-16 |
+| LittleBigPlanet 3 | Official LBPPC GitHub Windows release | US CUSA00473 and Europe CUSA00063, game update 1.28, checked 17 November 2026 |
 
-LBPPC requirements refresh from its official README and are cached for offline use. Unexpected documentation formats produce an error rather than changing requirements silently. The engine remains the final authority on compatibility.
+LBPPC offers 30 native FPS or 60 displayed FPS with frame generation. Native 120 FPS is not implemented upstream. RPCS3 offers 30/60/120 caps; compatible game patches and sufficient hardware are still needed for higher rates. [Details and sources](docs/VIDEO.md).
+
+LBPPC compatibility requirements refresh from its official README and are cached for offline use. Unexpected formats produce an error instead of silently changing requirements. The engine remains the final authority on compatibility.
 
 ## Build
 
-Windows 10/11 x64, Node.js 24+, Rust stable (MSVC), Visual Studio C++ build tools, Windows SDK and WebView2.
+Windows 10/11 x64, Node.js 24+, Rust 1.93+ (MSVC), Visual Studio C++ build tools, Windows SDK and WebView2.
 
 ```powershell
 npm ci
@@ -38,16 +38,14 @@ Development: `npm run tauri -- dev`. The browser frontend requires the real Taur
 
 ## Privacy and ownership
 
-Game folders are referenced read-only. Engines live separately. Imported engine installations are never automatically updated or uninstalled. Managed updates retain the previous installation, preserve user-created files and customized settings, and support rollback. Uninstall moves a managed engine into a retained backup instead of deleting saves. Configuration backup contains local paths; keep it private.
+Game folders are referenced read-only. Engines live separately. Imported engines are never automatically updated or uninstalled. Managed updates retain previous installations and preserve user-created files/settings. Uninstall moves a managed engine into a retained backup instead of deleting saves.
 
-No account, advertising or telemetry. Automatic update discovery contacts GitHub. Diagnostics are generated locally and omit paths, usernames, logs, artwork and credentials. LBPPC's own online account data stays in its own launcher.
+No launcher account, ads or analytics. Automatic release and requirements checks contact GitHub. Diagnostics are generated locally and omit paths, usernames, logs, artwork and credentials. Backups can contain private paths or engine settings; keep them private. Engine online accounts remain separate.
+
+See [privacy notice](PRIVACY.md), [artwork and distribution](docs/LEGAL.md), [image sources](docs/IMAGE-SOURCES.md) and [review of the supplied checklist](docs/CHECKLIST-REVIEW.md).
 
 ## Project notes
 
-See [upstream research](docs/UPSTREAM.md), [third-party notices](THIRD-PARTY-NOTICES.md) and [implementation progress](docs/PROGRESS.md).
+[Upstream research](docs/UPSTREAM.md), [third-party notices](THIRD-PARTY-NOTICES.md), [security policy](SECURITY.md), [security review](docs/SECURITY-REVIEW-1.2.1.md) and [verification](docs/TESTING.md).
 
-This is an unofficial fan project, not affiliated with or endorsed by Sony Interactive Entertainment, Media Molecule or Sumo Digital. LittleBigPlanet and related trademarks belong to their owners.
-
-Security scope and remaining limits: [review](docs/SECURITY-REVIEW-1.2.1.md), [security policy](SECURITY.md), [artwork and distribution](docs/LEGAL.md).
-
-Building from source requires Rust 1.93 or newer because of the maintained archive dependency.
+Unofficial fan project, not affiliated with or endorsed by Sony Interactive Entertainment, Media Molecule or Sumo Digital. LittleBigPlanet and related trademarks belong to their owners. The MIT code license grants no rights to their games or artwork.

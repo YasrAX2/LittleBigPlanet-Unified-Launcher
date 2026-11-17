@@ -4,6 +4,7 @@ mod download;
 mod metadata;
 mod model;
 mod release;
+mod video;
 use tauri::Manager;
 fn main() {
     std::panic::set_hook(Box::new(|_| {

@@ -31,6 +31,7 @@ pub struct Game {
     pub last_played: u64,
     pub fullscreen: bool,
     pub artwork: String,
+    pub video: crate::video::VideoSettings,
 }
 impl Default for Game {
     fn default() -> Self {
@@ -47,6 +48,7 @@ impl Default for Game {
             last_played: 0,
             fullscreen: false,
             artwork: String::new(),
+            video: Default::default(),
         }
     }
 }
@@ -183,6 +185,7 @@ pub fn validate_config(c: &Config) -> Result<()> {
         }
     }
     for g in &c.games {
+        g.video.validate(&g.engine)?;
         if !valid_artwork(&g.artwork, &g.id) { return Err("Invalid local artwork name.".into()); }
         if !["lbppc", "rpcs3", "lbprecomp", "replanet"].contains(&g.engine.as_str()) {
             return Err("Unknown game engine.".into());
@@ -191,6 +194,8 @@ pub fn validate_config(c: &Config) -> Result<()> {
     Ok(())
 }
 pub fn atomic_json(path: &Path, value: &impl Serialize, backup: bool) -> Result<()> {
+    crate::download::no_links(path)?;
+    crate::download::no_links(&path.with_extension("backup.json"))?;
     let parent = path.parent().ok_or("Invalid configuration path")?;
     fs::create_dir_all(parent).map_err(err)?;
     let mut tmp = tempfile::NamedTempFile::new_in(parent).map_err(err)?;
@@ -200,6 +205,23 @@ pub fn atomic_json(path: &Path, value: &impl Serialize, backup: bool) -> Result<
         fs::copy(path, path.with_extension("backup.json")).map_err(err)?;
     }
     tmp.persist(path).map_err(err)?;
+    Ok(())
+}
+pub fn atomic_text(path: &Path, text: &str, backup: bool) -> Result<()> {
+    use std::io::Write;
+    crate::download::no_links(path)?;
+    let parent=path.parent().ok_or("Invalid settings path")?;
+    fs::create_dir_all(parent).map_err(err)?;
+    let mut temp=tempfile::NamedTempFile::new_in(parent).map_err(err)?;
+    temp.write_all(text.as_bytes()).map_err(err)?;
+    temp.as_file().sync_all().map_err(err)?;
+    if backup && path.is_file() {
+        let extension=format!("backup.{}",path.extension().and_then(|v|v.to_str()).unwrap_or("txt"));
+        let backup_path=path.with_extension(extension);
+        crate::download::no_links(&backup_path)?;
+        fs::copy(path,backup_path).map_err(err)?;
+    }
+    temp.persist(path).map_err(err)?;
     Ok(())
 }
 pub fn activity(c: &mut Config, text: &str) {
@@ -264,4 +286,16 @@ mod appearance_tests {
         store.change(|c|{c.background="picture".into();Ok(())}).unwrap();
         assert_eq!(Store::open(dir.path().into()).unwrap().get().background,"picture");
     }
+    #[test]
+    fn legacy_video_defaults_and_invalid_video_do_not_corrupt_store() {
+        let temp=tempfile::tempdir().unwrap();
+        let game:Game=serde_json::from_value(serde_json::json!({"id":"lbp1"})).unwrap();
+        assert!(!game.video.enabled);assert_eq!(game.video.target_fps,0);
+        let store=Store::open(temp.path().into()).unwrap();
+        store.change(|c|{c.games[0].video.enabled=true;c.games[0].video.target_fps=120;Ok(())}).unwrap();
+        assert!(store.change(|c|{c.games[2].video.enabled=true;c.games[2].video.target_fps=120;Ok(())}).is_err());
+        let saved=Store::open(temp.path().into()).unwrap().get();
+        assert_eq!(saved.games[0].video.target_fps,120);assert!(!saved.games[2].video.enabled);
+    }
+
 }
