@@ -158,6 +158,7 @@ impl Store {
     }
 }
 pub fn migrate_appearance(c: &mut Config) {
+    for g in &mut c.games { if g.id=="lbp1" && g.engine=="lbprecomp" { g.engine="rpcs3".into();g.video=Default::default(); } }
     if ["cool-island", "ocean", "grape", "berry", "sunshine", "sand", "mint", "midnight"].contains(&c.palette.as_str()) {
         c.palette = "black-green".into();
     }
@@ -298,4 +299,13 @@ mod appearance_tests {
         assert_eq!(saved.games[0].video.target_fps,120);assert!(!saved.games[2].video.enabled);
     }
 
+}
+
+#[cfg(test)] mod mac_adapter_migration_tests {
+    use super::*;
+    #[test] fn obsolete_lbp1_adapter_moves_to_rpcs3_without_losing_game_reference() {
+        let mut c=Config::default();c.games[0].engine="lbprecomp".into();c.games[0].data="disc-folder".into();c.games[0].favorite=true;
+        migrate_appearance(&mut c);
+        assert_eq!(c.games[0].engine,"rpcs3");assert_eq!(c.games[0].data,"disc-folder");assert!(c.games[0].favorite);
+    }
 }

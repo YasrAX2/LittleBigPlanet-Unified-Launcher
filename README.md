@@ -56,6 +56,10 @@ Unofficial fan project, not affiliated with or endorsed by Sony Interactive Ente
 
 New installs use the included Sackboy background with 8 px blur, black-and-green colors and 55% panel opacity. Existing users can select **Settings > Restore default look**. This resets appearance only; game paths, saves and accessibility settings remain unchanged. Custom imported pictures stay local. Artwork credits and ownership are described in [image sources](docs/IMAGE-SOURCES.md).
 
-## Contributors
+## [Contributors](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/graphs/contributors)
 
-**yasrax2** created the launcher and directed its features and design. **shawarma1m8ly** suggested the original idea for this LBP PC launcher. Development used AI assistance for implementation, debugging, research and documentation. See [contributor credits](CONTRIBUTORS.md).
+**yasrax2** created the launcher and directed its features and design. **[KodkTheMan](https://github.com/KodkTheMan)** (formerly shawarma1m8ly) suggested the original idea for this LBP PC launcher. Development used AI assistance for implementation, debugging, research and documentation. See [contributor credits](CONTRIBUTORS.md).
+
+LittleBigRecomp currently targets Apple Silicon macOS with Metal. It has no official Windows build and is not offered as a Windows engine. Use RPCS3 for LBP1 here.
+
+RPCS3 settings compatibility: console identifiers retain their exact hexadecimal text when creating a launcher-owned profile. Original RPCS3 configuration files are not rewritten. Invalid settings still stop profile generation.

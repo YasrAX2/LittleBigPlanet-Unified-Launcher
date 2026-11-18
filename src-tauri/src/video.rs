@@ -65,7 +65,23 @@ pub fn frame_gen_ini(text: &str, mode: &str) -> String {
 fn read_yaml(path: &Path) -> Result<serde_yaml::Value> {
     download::no_links(path)?;
     if fs::metadata(path).map_err(err)?.len()>4*1024*1024 { return Err("RPCS3 configuration exceeds 4 MB.".into()); }
-    let value:serde_yaml::Value=serde_yaml::from_slice(&fs::read(path).map_err(err)?).map_err(|_|"RPCS3 settings cannot be read; refusing to replace them.")?;
+    let bytes=fs::read(path).map_err(err)?;
+    let text=std::str::from_utf8(&bytes).map_err(|_|"RPCS3 settings are not valid UTF-8; original settings were left untouched.")?;
+    // RPCS3 reads these as hexadecimal strings; YAML Value cannot store 128-bit integers.
+    let normalized=text.lines().map(|line| {
+        if let Some((key,value))=line.split_once(':') {
+            let value=value.trim();
+            let digits=value.strip_prefix("0x").or_else(||value.strip_prefix("0X")).unwrap_or(value);
+            if ["Console PSID","Console IDPS"].contains(&key.trim()) && !digits.is_empty() && digits.len()<=32 && digits.bytes().all(|b|b.is_ascii_hexdigit()) {
+                return format!("{key}: \"{value}\"");
+            }
+        }
+        line.to_string()
+    }).collect::<Vec<_>>().join("\n");
+    let value:serde_yaml::Value=serde_yaml::from_str(&normalized).map_err(|e| {
+        let line=e.location().map(|p|p.line()).unwrap_or(0);
+        format!("RPCS3 settings cannot be read at line {line}; original settings were left untouched.")
+    })?;
     if !value.is_mapping() { return Err("RPCS3 settings must be a YAML mapping.".into()); }
     Ok(value)
 }
@@ -160,4 +176,35 @@ mod tests {
         assert_eq!(generated["Core"]["SPU Block Size"].as_str(),Some("Safe"));
     }
 
+}
+
+#[cfg(test)] mod rpc_yaml_tests {
+    use super::*;
+    #[test] fn console_identifiers_keep_exact_hex_digits_and_settings_stay_untouched() {
+        let d=tempfile::tempdir().unwrap();let p=d.path().join("config.yml");
+        let original="System:\n  Console PSID: 0x11112222333344445555666677778888\n  Console IDPS: 0x00000000000000000000000000000001\nVideo:\n  Frame limit: 30\n  Write Color Buffers: false\n";
+        fs::write(&p,original).unwrap();let data=read_yaml(&p).unwrap();
+        assert_eq!(data["System"]["Console PSID"].as_str(),Some("0x11112222333344445555666677778888"));
+        assert_eq!(data["System"]["Console IDPS"].as_str(),Some("0x00000000000000000000000000000001"));
+        assert_eq!(data["Video"]["Frame limit"].as_u64(),Some(30));
+        assert_eq!(data["Video"]["Write Color Buffers"].as_bool(),Some(false));
+        assert_eq!(fs::read_to_string(&p).unwrap(),original);
+        let serialized=serde_yaml::to_string(&data).unwrap();
+        assert_eq!(serde_yaml::from_str::<serde_yaml::Value>(&serialized).unwrap(),data);
+    }
+    #[test] fn invalid_yaml_is_still_rejected_without_echoing_private_values() {
+        let d=tempfile::tempdir().unwrap();let p=d.path().join("config.yml");let original="Video: [\nprivate-secret: bad";
+        fs::write(&p,original).unwrap();let error=read_yaml(&p).unwrap_err();
+        assert!(!error.contains("private-secret"));assert_eq!(fs::read_to_string(&p).unwrap(),original);
+    }
+    #[test]
+    #[ignore="reads the owner's local RPCS3 settings only when explicitly requested"]
+    fn local_rpc_config_roundtrip() {
+        let root=std::env::var("PATCHWORK_RPC_ROOT").unwrap();let root=Path::new(&root);
+        let original=fs::read(root.join("config/config.yml")).unwrap();
+        let d=tempfile::tempdir().unwrap();let i=Installation{root:root.to_string_lossy().into(),..Default::default()};
+        let game=Game{id:"lbp1".into(),engine:"rpcs3".into(),..Default::default()};
+        let profile=rpcs3_profile(d.path(),&i,&game).unwrap();read_yaml(&profile).unwrap();
+        assert_eq!(fs::read(root.join("config/config.yml")).unwrap(),original);
+    }
 }
