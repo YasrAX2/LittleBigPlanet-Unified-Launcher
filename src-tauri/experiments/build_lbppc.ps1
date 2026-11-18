@@ -23,6 +23,7 @@ if($drive.Free -lt 20GB){throw 'Source builds need at least 20 GB of free space.
 $tools=Join-Path $Workspace 'tools'
 $msys=Join-Path $tools 'msys64'
 $bash=Join-Path $msys 'usr\bin\bash.exe'
+NoLinks $tools;NoLinks $bash
 if(-not(Test-Path -LiteralPath $bash)){
  Step 'Downloading verified MSYS2 build tools'
  New-Item -ItemType Directory -Force -Path $tools | Out-Null
@@ -43,19 +44,25 @@ Step 'Updating signed compiler packages (first build can take a while)'
 # Core-runtime updates can terminate their first shell; a fresh shell completes the update.
 & $bash --login -c 'pacman -Syu --noconfirm'
 Checked $bash @('--login','-c','pacman -Syu --noconfirm')
-$python=(Get-Command python.exe -ErrorAction SilentlyContinue).Source
-if(-not $python -or $python -like '*WindowsApps*'){
- $python=Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+function WindowsPython {
+ $candidates=@((Get-Command python.exe -ErrorAction SilentlyContinue).Source)
+ $candidates+=@(Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -ExpandProperty FullName)
+ foreach($candidate in ($candidates | Select-Object -Unique)){
+  if($candidate -and $candidate -notlike '*WindowsApps*'){
+   & $candidate -c 'import sys; raise SystemExit(sys.version_info < (3,10))'
+   if($LASTEXITCODE -eq 0){return $candidate}
+  }
+ }
 }
-if($python){ & $python -c 'import sys; raise SystemExit(sys.version_info < (3,10))'; if($LASTEXITCODE -ne 0){$python=$null} }
+$python=WindowsPython
 if(-not $python){
  Step 'Installing Windows Python for official LBPPC packaging'
  $winget=(Get-Command winget.exe -ErrorAction SilentlyContinue).Source
- if(-not $winget){throw 'Windows Python is missing and winget is unavailable. Install Python from python.org, then retry.'}
+ if(-not $winget){throw 'Windows Python 3.10+ is missing and winget is unavailable. Install Python from python.org, then retry.'}
  Checked $winget @('install','--id','Python.Python.3.13','--exact','--scope','user','--silent','--accept-package-agreements','--accept-source-agreements')
- $python=Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+ $python=WindowsPython
 }
-if(-not $python){throw 'Windows Python installation could not be located.'}
+if(-not $python){throw 'A supported Windows Python installation could not be located.'}
 $source=Join-Path $Workspace 'lbppc-v0.1.5'
 $env:POD_SOURCE_WIN=$source;$env:POD_PYTHON_WIN=$python
 $env:CMAKE_BUILD_PARALLEL_LEVEL='2'
@@ -86,10 +93,13 @@ ninja() { command ninja -j2 "$@"; }
 export -f ninja
 bash build.sh
 echo 'PODBUILD: Packaging the source build'
+# The release packaging script expects a runtime-created file; use its tracked default on a fresh checkout.
+[[ -f input.ini ]] || cp packaging/input.ini input.ini
 export WINPYTHON=$(cygpath -u "$POD_PYTHON_WIN")
 bash packaging/windows/package.sh
 '@
 [IO.File]::WriteAllText($driver,$driverText.Replace("`r`n","`n"),(New-Object Text.UTF8Encoding($false)))
+$env:MSYS2_ROOT=(& (Join-Path $msys 'usr\bin\cygpath.exe') -u $msys).Trim()
 $driverMsys=(& (Join-Path $msys 'usr\bin\cygpath.exe') -u $driver).Trim()
 NoLinks (Join-Path $source 'out\stage')
 Checked $bash @('--login',$driverMsys)

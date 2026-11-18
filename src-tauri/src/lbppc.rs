@@ -91,6 +91,7 @@ fn update(app: &tauri::AppHandle, status: &str, error: &str) {
 }
 fn copy_user_data(from: &Path, to: &Path) -> Result<()> {
     let user=from.join("user");
+    download::no_links(&user)?;
     if user.is_dir(){for file in download::files(&user)?{
         let relative=file.strip_prefix(&user).map_err(err)?;let target=to.join("user").join(relative);download::no_links(&target)?;
         fs::create_dir_all(target.parent().unwrap()).map_err(err)?;fs::copy(file,target).map_err(err)?;
