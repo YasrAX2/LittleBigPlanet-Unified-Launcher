@@ -1,6 +1,6 @@
 # PS3 setup implementation and limits
 
-Version 1.5.0. The launcher calls RPCS3's documented source-defined --headless --installfw and --headless --installpkg paths. It does not implement a second package extractor or supply game licenses.
+Version 1.6.0 adds LBP3 PS3 alongside LBP1/2. The launcher calls RPCS3's documented source-defined --headless --installfw and --headless --installpkg paths. It does not implement a second package extractor or supply game licenses.
 
 ## Firmware integrity
 

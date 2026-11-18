@@ -2,21 +2,21 @@
 
 ### Can I use the PS3 version of LittleBigPlanet 3?
 
-No. This launcher currently supports LBP3 through LBPPC, which requires the PS4 edition with its matching 1.28 update extracted to folders. A PS3 LBP3 PKG is incompatible with this option. LBP3 via RPCS3 is not implemented in this launcher.
+Yes, in **1.6.0**. Open LBP3, set **Game edition / engine** to **PS3 · RPCS3 emulator**, then import your PS3 game folder or choose **Install PS3 PKG**. The PS4 1.28 requirement applies only to LBPPC. Switching editions unlinks old file paths and resets video overrides; it does not delete files or saves.
 
 [Complete guide](USAGE.md) · [Troubleshooting](TROUBLESHOOTING.md) · [Project](../README.md)
 
 ### Can I put a PKG in the game-folder picker?
 
-No. A PKG is an installer file, not an installed game directory. In **1.5.0**, select LBP1 or LBP2 and click **Install PS3 PKG** instead. RPCS3 processes it and the launcher links a matching complete installed game. Older versions require installation in RPCS3 first.
+No. A PKG is an installer file, not an installed game directory. In **1.6.0**, select a PS3 game (including LBP3 with RPCS3 selected) and click **Install PS3 PKG** instead. RPCS3 processes it and the launcher links a matching complete installed game. Older versions require installation in RPCS3 first.
 
 ### Does this support PS4 PKGs too?
 
-No. LBP3 needs your complete extracted PS4 base-game folder and a matching 1.28 update. A PS4 package is rejected by the PS3 importer.
+No. The LBP3 / LBPPC option needs your complete extracted PS4 base-game folder and a matching 1.28 update. A PS4 package is rejected by the PS3 importer.
 
 ### What exact file do I select for a folder import?
 
-Select the folder itself. LBP1/2 need PARAM.SFO and USRDIR/EBOOT.BIN, directly or under PS3_GAME. LBP3 needs eboot.bin, base_001.farc and metadata under sce_sys (or a supported Sc0 layout). Keep the remaining files too. [Examples](USAGE.md#game-imports).
+Select the folder itself. PS3 editions need PARAM.SFO and USRDIR/EBOOT.BIN, directly or under PS3_GAME. LBP3 / LBPPC needs eboot.bin, base_001.farc and metadata under sce_sys (or a supported Sc0 layout). Keep the remaining files too. [Examples](USAGE.md#game-imports).
 
 ### Can I use ZIP, RAR, 7z or ISO?
 
@@ -77,3 +77,7 @@ Configured engines can launch offline after setup. Release checks/downloads use 
 ### The import succeeded but the game does not boot. Why?
 
 Import validation checks metadata and paths, not every encrypted/missing/corrupt asset or game behavior. Inspect RPCS3/LBPPC's own error and [Troubleshooting](TROUBLESHOOTING.md). For a report, include versions, selected game/title ID, error text and whether it happens in Standard mode. Never attach game dumps, firmware, account files or license keys.
+
+### Why does LBPPC need 1.28?
+
+It supports that exact PS4 game version because its binary patches target that build. It is not a general requirement to use the latest game update. The separate RPCS3 option runs the PS3 edition and does not require PS4 version 1.28.

@@ -1,6 +1,6 @@
 [package]
 name = "patchwork-pod"
-version = "1.5.0"
+version = "1.6.0"
 description = "An unofficial, handcrafted LittleBigPlanet unified launcher"
 authors = ["yasrax2", "Patchwork Pod contributors"]
 license = "MIT"

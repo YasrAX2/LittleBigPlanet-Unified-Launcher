@@ -86,7 +86,7 @@ fn merge_yaml(base: &mut serde_yaml::Value, overlay: serde_yaml::Value) {
 
 pub fn rpcs3_profile(dir: &Path, installation: &Installation, game: &Game) -> Result<PathBuf> {
     game.video.validate("rpcs3")?;
-    if !["lbp1","lbp2"].contains(&game.id.as_str()) { return Err("Unknown RPCS3 game profile.".into()); }
+    if !["lbp1","lbp2","lbp3"].contains(&game.id.as_str()) { return Err("Unknown RPCS3 game profile.".into()); }
     let config_root=crate::ps3::root(installation)?;
     let engine_root=config_root.as_path();
     let root=engine_root;
@@ -216,4 +216,14 @@ mod tests {
         let path=rpcs3_profile(dir.path(),&i,&g).unwrap();assert_eq!(read_yaml(&path).unwrap()["Video"]["Write Color Buffers"].as_bool(),Some(false));
     }
 
+}
+
+#[cfg(test)] mod lbp3_profile_tests {
+    use super::*;
+    #[test] fn ps3_lbp3_has_its_own_profile_and_keeps_original() {
+        let d=tempfile::tempdir().unwrap();let i=Installation{root:d.path().to_string_lossy().into(),..Default::default()};
+        let g=Game{id:"lbp3".into(),engine:"rpcs3".into(),title_id:"BCUS98362".into(),..Default::default()};
+        let path=rpcs3_profile(d.path(),&i,&g).unwrap();assert!(path.ends_with("rpcs3-lbp3.yml"));
+        assert!(!d.path().join("config.yml").exists());
+    }
 }

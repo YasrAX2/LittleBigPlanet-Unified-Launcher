@@ -137,7 +137,7 @@ pub fn inspect(
     }
     .into();
     let title_norm = r.title.to_lowercase().replace([' ', '™', '®', ':'], "");
-    if id == "lbp3" {
+    if id == "lbp3" && title_id.starts_with("CUSA") {
         if !requirements.title_ids.contains(&title_id) {
             r.valid = false;
             r.messages.push(format!(
@@ -157,6 +157,9 @@ pub fn inspect(
             r.messages
                 .push("Missing eboot.bin. Select the extracted PS4 base-game folder.".into())
         }
+        if is_update && !p.join("patch_001.farc").is_file() {
+            r.valid=false;r.messages.push("Incomplete PS4 update: missing patch_001.farc. Choose the full extracted 1.28 update, not a metadata-only or delta package.".into());
+        }
         if !is_update && !p.join("base_001.farc").is_file() {
             r.valid = false;
             r.messages.push(
@@ -170,8 +173,10 @@ pub fn inspect(
             ))
         }
     } else {
-        let number = if id == "lbp2" { "2" } else { "1" };
-        let matches = if number == "2" {
+        let number = if id == "lbp3" { "3" } else if id == "lbp2" { "2" } else { "1" };
+        let matches = if number == "3" {
+            title_norm.contains("littlebigplanet3")
+        } else if number == "2" {
             title_norm.contains("littlebigplanet2")
         } else {
             title_norm.contains("littlebigplanet")
@@ -192,6 +197,13 @@ pub fn inspect(
     if r.version.is_empty() {
         r.messages
             .push("Game version was not provided in PARAM.SFO.".into())
+    }
+    Ok(r)
+}
+pub fn inspect_for_engine(id: &str, engine: &str, p: &Path, is_update: bool, requirements: &crate::release::Requirements) -> Result<Inspection> {
+    let mut r=inspect(id,p,is_update,requirements)?;
+    if id=="lbp3" && (r.title_id.starts_with("CUSA") != (engine=="lbppc")) {
+        r.valid=false;r.messages.push("Wrong platform: choose PS3 files for RPCS3, or PS4 files for LBPPC.".into());
     }
     Ok(r)
 }
@@ -283,5 +295,26 @@ mod tests {
         let t = tempfile::tempdir().unwrap();
         fs::write(t.path().join("mac.exe"), [0u8; 64]).unwrap();
         assert!(windows_exe(&t.path().join("mac.exe")).is_err());
+    }
+}
+
+#[cfg(test)] mod edition_tests {
+    use super::*;
+    #[test] fn lbp3_ps3_accepts_base_without_ps4_update_and_rejects_wrong_edition() {
+        let d=tempfile::tempdir().unwrap();
+        fs::create_dir_all(d.path().join("USRDIR")).unwrap();
+        fs::write(d.path().join("USRDIR/EBOOT.BIN"),b"test").unwrap();
+        fs::write(d.path().join("PARAM.SFO"),fixture("LittleBigPlanet 3","BCUS98362","01.00")).unwrap();
+        assert!(inspect_for_engine("lbp3","rpcs3",d.path(),false,&Default::default()).unwrap().valid);
+        assert!(!inspect_for_engine("lbp3","lbppc",d.path(),false,&Default::default()).unwrap().valid);
+        assert!(!inspect_for_engine("lbp2","rpcs3",d.path(),false,&Default::default()).unwrap().valid);
+    }
+    #[test] fn ps4_metadata_only_update_is_rejected() {
+        let d=tempfile::tempdir().unwrap();fs::create_dir(d.path().join("sce_sys")).unwrap();
+        fs::write(d.path().join("sce_sys/param.sfo"),fixture("LittleBigPlanet 3","CUSA00473","01.28")).unwrap();
+        fs::write(d.path().join("eboot.bin"),b"test").unwrap();
+        assert!(!inspect_for_engine("lbp3","rpcs3",d.path(),false,&Default::default()).unwrap().valid);
+        let r=inspect_for_engine("lbp3","lbppc",d.path(),true,&Default::default()).unwrap();
+        assert!(!r.valid);assert!(r.messages.iter().any(|m|m.contains("patch_001.farc")));
     }
 }

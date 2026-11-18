@@ -51,4 +51,4 @@
 
 :root[data-typography=wiki] h1,:root[data-typography=wiki] h2,:root[data-typography=wiki] h3{font-weight:800}:root[data-typography=wiki] .brand strong{font-weight:800}:root[data-typography=wiki] p{line-height:1.75}
 
-.platform-requirement{font-size:.82rem;font-weight:600;margin:8px 0;color:var(--text)}
+.platform-requirement{font-size:.82rem;font-weight:600;margin:8px 0;color:var(--ink)}

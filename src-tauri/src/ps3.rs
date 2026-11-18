@@ -51,7 +51,7 @@ pub fn package_title(path: &Path) -> Result<String> {
 pub fn installed_game(current: &crate::model::Game, installed: &Path, title: &str, req: &crate::release::Requirements) -> Result<metadata::Inspection> {
     let data=metadata::sfo_at(installed).map_err(|_|"No matching installed game metadata was found. Updates/DLC require their base game.".to_string())?;
     if current.title_id==title && !current.data.is_empty() {
-        if let Ok(mut r)=metadata::inspect(&current.id,Path::new(&current.data),false,req) {
+        if let Ok(mut r)=metadata::inspect_for_engine(&current.id,"rpcs3",Path::new(&current.data),false,req) {
             if r.valid && r.title_id==title {
                 if let Some(version)=data.get("APP_VER"){r.version=version.clone();}
                 return Ok(r);
@@ -59,7 +59,7 @@ pub fn installed_game(current: &crate::model::Game, installed: &Path, title: &st
         }
     }
     if data.get("CATEGORY").is_some_and(|v|v=="GD") {return Err("Update installed. Link the original base-game folder before playing; an update is not a complete game.".into());}
-    let r=metadata::inspect(&current.id,installed,false,req)?;
+    let r=metadata::inspect_for_engine(&current.id,"rpcs3",installed,false,req)?;
     if !r.valid || r.title_id!=title {return Err("Installed content is not a complete matching LBP game. Check RPCS3; original package retained.".into());}
     Ok(r)
 }
@@ -168,4 +168,16 @@ fn run_installer_cancellable(i: &Installation, option: &str, path: &Path, cancel
         assert_eq!(fs::read(disc.join("PS3_GAME/USRDIR/EBOOT.BIN")).unwrap(),b"original");
     }
 
+}
+
+#[cfg(test)] mod lbp3_tests {
+    use super::*;
+    #[test] fn installed_lbp3_ps3_package_is_linkable_without_ps4_files() {
+        let d=tempfile::tempdir().unwrap();fs::create_dir(d.path().join("USRDIR")).unwrap();
+        fs::write(d.path().join("USRDIR/EBOOT.BIN"),b"test").unwrap();
+        fs::write(d.path().join("PARAM.SFO"),metadata::fixture("LittleBigPlanet 3","NPUA81116","01.00")).unwrap();
+        let g=crate::model::Game{id:"lbp3".into(),engine:"rpcs3".into(),..Default::default()};
+        assert!(installed_game(&g,d.path(),"NPUA81116",&Default::default()).unwrap().valid);
+        assert!(installed_game(&g,d.path(),"NPUA99999",&Default::default()).is_err());
+    }
 }

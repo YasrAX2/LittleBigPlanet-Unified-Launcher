@@ -25,13 +25,13 @@ Version 1.5.0 prepares official PS3 firmware automatically after installing/impo
 
 Get firmware only from [PlayStation's official page](https://www.playstation.com/en-us/support/hardware/ps3/system-software/). Follow the [RPCS3 quickstart](https://rpcs3.net/quickstart) for custom configurations and game licenses. An unusual RPCS3_CONFIG_DIR or custom virtual filesystem can require setup in RPCS3 itself. Normal and portable layouts are recognized.
 
-LBP1/2 currently use emulation through RPCS3 on Windows. Their future-native-project import options do not establish present Windows game compatibility. LBP3 uses the separate native LBPPC project.
+LBP1/2 currently use emulation through RPCS3 on Windows. Their future-native-project import options do not establish present Windows game compatibility. In 1.6.0, LBP3 offers PS3 through RPCS3 or PS4 through the separate native LBPPC project. Choose the edition on its game page before importing.
 
 ## Game imports
 
 Open **Game files**, select a game and use **Choose game folder**. Select the actual root directory containing the files below. Keep all remaining dump files; these trees show required markers, not complete file lists.
 
-### LBP1 / LBP2: extracted PS3 games
+### LBP1 / LBP2 / LBP3: extracted PS3 games
 
 ```text
 My LBP1/                 <- choose this folder
@@ -54,7 +54,7 @@ Installed game/         <- choose this folder
 
 A lone EBOOT.BIN or PARAM.SFO is insufficient. Dump preparation, any required decryption and game licenses belong to the engine's supported workflow.
 
-### LBP1 / LBP2: PS3 PKG files, version 1.5.0
+### PS3 PKG files: LBP1/2 in 1.5.0, plus LBP3 in 1.6.0
 
 1. Install/import RPCS3 first.
 2. On the matching game's Game files panel, click **Install PS3 PKG**.
@@ -66,7 +66,7 @@ Updates and DLC require their base game already installed. When a matching insta
 
 Some digital games need the user's own license. The launcher cannot generate it. Install your legally obtained license through RPCS3. Original packages are retained. If an installer fails, inspect RPCS3's local log before retrying.
 
-### LBP3: extracted PS4 base game and update
+### LBP3 / LBPPC: extracted PS4 base game and update
 
 ```text
 My LBP3/                <- base game folder
@@ -162,3 +162,7 @@ Local data lives in `%LOCALAPPDATA%\com.patchworkpod.launcher`. Do not blindly d
 Configured games can launch offline once prerequisites exist. Initial downloads need a network connection; engine online services have their own accounts/requirements. [Troubleshooting](TROUBLESHOOTING.md) · [Common questions](FAQ.md).
 
 Technical setup details and verification limits: [PS3 setup](PS3-SETUP.md).
+
+## LBP3 PS3 support in 1.6.0
+
+Open **Library > LittleBigPlanet 3 > Game edition / engine > PS3 · RPCS3 emulator**. Install/import RPCS3 and prepare its official firmware, then select a complete extracted PS3 game folder or use **Install PS3 PKG**. Game licenses remain user-supplied in RPCS3. PS4 packages are rejected. **Discover games** also finds LBP3 in RPCS3. Switching editions resets only linked game/update metadata and video overrides; favorites, artwork, playtime and physical files are preserved. Link that edition again after switching back. PS3 saves stay in RPCS3; they are separate from the PS4 port. The PS4 1.28 update requirement does not apply to RPCS3. Emulator compatibility and FPS depend on the game, settings and hardware.

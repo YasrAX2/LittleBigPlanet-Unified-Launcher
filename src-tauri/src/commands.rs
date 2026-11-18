@@ -151,18 +151,19 @@ pub fn import_data(
     if !c.games.iter().any(|g| g.id == id) {
         return Err("Unknown game".into());
     }
-    if update && id != "lbp3" {
+    let game=c.games.iter().find(|g|g.id==id).ok_or("Unknown game")?;
+    if update && game.engine != "lbppc" {
         return Err("Install PS3 updates using RPCS3.".into());
     }
     let p = Path::new(&path);
-    let r = metadata::inspect(&id, p, update, &requirements_cached(&s))?;
+    let r = metadata::inspect_for_engine(&id, &game.engine, p, update, &requirements_cached(&s))?;
     for i in c.installations.values() {
         let root = Path::new(&i.root).canonicalize().map_err(err)?;
         let data = Path::new(&r.path);
         if data.starts_with(&root) || root.starts_with(data) {
             let title=r.title_id.as_bytes();
             let safe_title=title.len()==9 && title[..4].iter().all(u8::is_ascii_uppercase) && title[4..].iter().all(u8::is_ascii_digit);
-            let installed=if i.engine=="rpcs3" && id!="lbp3" && safe_title { crate::ps3::root(i)?.join("dev_hdd0/game").join(&r.title_id).canonicalize().ok() }else{None};
+            let installed=if i.engine=="rpcs3" && game.engine=="rpcs3" && safe_title { crate::ps3::root(i)?.join("dev_hdd0/game").join(&r.title_id).canonicalize().ok() }else{None};
             if installed.as_deref()!=Some(data) { return Err("Keep standalone game dumps separate from engines, or choose the exact installed RPCS3 game folder.".into()); }
         }
     }
@@ -280,12 +281,13 @@ pub fn game_settings(s: tauri::State<Store>, id: String, changes: Value) -> Resu
             let allowed = match id.as_str() {
                 "lbp1" => ["rpcs3", "lbprecomp"],
                 "lbp2" => ["rpcs3", "replanet"],
-                _ => ["lbppc", "lbppc"],
+                _ => ["lbppc", "rpcs3"],
             };
             if !allowed.contains(&v) {
                 return Err("That engine does not support this game.".into());
             }
-            g.engine = v.into()
+            idle(&s)?;
+            g.switch_engine(v);
         }
         if !["rpcs3","lbppc"].contains(&g.engine.as_str()) { g.video.enabled=false; }
         Ok(())
@@ -295,16 +297,18 @@ pub fn validate(s: &Store, id: &str) -> Result<metadata::Inspection> {
     let c = s.get();
     let g = c.games.iter().find(|g| g.id == id).ok_or("Unknown game")?;
     let req = requirements_cached(s);
-    let mut r = metadata::inspect(id, Path::new(&g.data), false, &req)?;
-    if id == "lbp3" {
+    let mut r = metadata::inspect_for_engine(id, &g.engine, Path::new(&g.data), false, &req)?;
+    if g.engine == "lbppc" {
         if !g.update.is_empty() {
-            let u = metadata::inspect(id, Path::new(&g.update), true, &req)?;
+            let u = metadata::inspect_for_engine(id, &g.engine, Path::new(&g.update), true, &req)?;
             r.valid &= u.valid && u.title_id == r.title_id;
             r.messages.extend(u.messages);
             if u.title_id != r.title_id {
                 r.messages
                     .push("Update region differs from the base game.".into())
             }
+        } else if !Path::new(&g.data).join("patch_001.farc").is_file() {
+            r.valid=false;r.messages.push("Incomplete combined PS4 game: patch_001.farc is missing. Select the full extracted 1.28 update folder.".into());
         } else if r.version.trim_start_matches('0') != req.version {
             r.valid = false;
             r.messages
@@ -365,8 +369,8 @@ pub fn discover_games(s: tauri::State<Store>) -> Result<Vec<metadata::Inspection
     Ok(paths
         .iter()
         .filter_map(|p| {
-            for id in ["lbp1", "lbp2"] {
-                if let Ok(r) = metadata::inspect(id, p, false, &req) {
+            for id in ["lbp1", "lbp2", "lbp3"] {
+                if let Ok(r) = metadata::inspect_for_engine(id, "rpcs3", p, false, &req) {
                     if r.valid {
                         return Some(r);
                     }
@@ -766,8 +770,10 @@ pub async fn prepare_ps3(app: tauri::AppHandle, path: Option<String>) -> Result<
 #[tauri::command]
 pub async fn import_ps3_package(app: tauri::AppHandle, id: String, path: String) -> Result<String> {
     tauri::async_runtime::spawn_blocking(move||{
-        if !["lbp1","lbp2"].contains(&id.as_str()){return Err("Only LBP1/2 PS3 packages are supported here. LBP3 needs extracted PS4 folders.".into());}
+        if !["lbp1","lbp2","lbp3"].contains(&id.as_str()){return Err("Unknown PS3 game.".into());}
         let s=app.state::<Store>();idle(&s)?;
+        let current=s.get();
+        if current.games.iter().find(|g|g.id==id).is_none_or(|g|g.engine!="rpcs3"){return Err("Select RPCS3 / PS3 before installing a PS3 package.".into());}
         let title=crate::ps3::package_title(Path::new(&path))?;
         {let mut busy=s.busy.lock().map_err(err)?;if *busy{return Err("Another setup is running.".into());}*busy=true;}
         let result=(||{
@@ -779,7 +785,7 @@ pub async fn import_ps3_package(app: tauri::AppHandle, id: String, path: String)
             crate::ps3::run_installer(i,"--installpkg",Path::new(&path))?;
             let current=c.games.iter().find(|g|g.id==id).ok_or("Unknown game")?;
             let r=crate::ps3::installed_game(current,&installed,&title,&requirements_cached(&s))?;
-            s.change(|c|{let g=game_mut(c,&id)?;g.engine="rpcs3".into();g.data=r.path;g.title_id=r.title_id;g.version=r.version;g.region=r.region;Ok(())})?;
+            s.change(|c|{let g=game_mut(c,&id)?;g.engine="rpcs3".into();g.update.clear();g.data=r.path;g.title_id=r.title_id;g.version=r.version;g.region=r.region;Ok(())})?;
             Ok(if existed{"RPCS3 processed the package and the existing matching game is linked. Check RPCS3 for update/DLC details."}else{"Installed game folder found and linked. Some digital games still need your own game license in RPCS3."}.into())
         })();*s.busy.lock().map_err(err)?=false;let _=app.emit("changed",());result
     }).await.map_err(err)?

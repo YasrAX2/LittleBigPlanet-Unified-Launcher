@@ -1,3 +1,9 @@
+# Version 1.6.0 verification
+
+45 Rust, 10 frontend and 10 Python tests pass (65 regular tests); one network/real-firmware integration test remains opt-in. New synthetic tests cover LBP3 PS3 base-game acceptance without PS4 1.28, wrong-edition/game rejection, incomplete PS4 updates, edition-switch reference/video reset without losing favorites/artwork/playtime, installed PS3 LBP3 linking and a separate RPCS3 profile. The production frontend headless check confirms the edition selector exposes PS3 PKG import and hides PS4-only requirements for RPCS3, then restores PS4 controls when switched back.
+
+Real LBP3 PS3 package installation and gameplay are not verified. No owner's PS3 package was available for this implementation. Existing engine setup and log-confirmed RPCS3 installation paths are reused. No FPS or performance guarantee is made. Builds remain unsigned.
+
 # Version 1.5.0 verification
 
 38 Rust, 9 frontend and 8 Python tests pass (55). The separate official-firmware integration test is opt-in and excluded from normal CI. Tests cover PS3 versus PS4 headers, truncated packages/unsafe identifiers, normal/portable firmware detection, fresh completion evidence, retaining a linked disc folder when installing updates, relocating managed digital-game references while retaining external dump paths, and per-game profile preservation without changing Vblank/frame limits when overrides are off.

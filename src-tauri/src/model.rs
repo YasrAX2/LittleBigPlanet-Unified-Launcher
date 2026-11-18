@@ -34,6 +34,14 @@ pub struct Game {
     pub artwork: String,
     pub video: crate::video::VideoSettings,
 }
+impl Game {
+    pub fn switch_engine(&mut self, engine: &str) {
+        if self.engine!=engine {
+            self.engine=engine.into();self.data.clear();self.update.clear();self.title_id.clear();self.region.clear();self.version.clear();
+            self.video=Default::default();
+        }
+    }
+}
 impl Default for Game {
     fn default() -> Self {
         Self {
@@ -313,4 +321,16 @@ mod appearance_tests {
         assert_eq!(store.get().typography,"wiki");
     }
 
+}
+
+#[cfg(test)] mod edition_switch_tests {
+    use super::*;
+    #[test] fn switching_edition_clears_platform_paths_and_video_but_keeps_user_choices() {
+        let mut g=Game{id:"lbp3".into(),engine:"lbppc".into(),data:"game".into(),update:"patch".into(),title_id:"CUSA00473".into(),favorite:true,seconds:300,artwork:"lbp3.png".into(),..Default::default()};
+        g.video.enabled=true;g.video.rendering="native-test".into();
+        g.switch_engine("lbppc");assert_eq!(g.data,"game");
+        g.switch_engine("rpcs3");assert!(g.data.is_empty());assert!(g.update.is_empty());assert!(g.title_id.is_empty());
+        assert!(!g.video.enabled);assert_eq!(g.video.rendering,"standard");
+        assert!(g.favorite);assert_eq!(g.seconds,300);assert_eq!(g.artwork,"lbp3.png");
+    }
 }

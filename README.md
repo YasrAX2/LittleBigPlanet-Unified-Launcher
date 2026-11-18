@@ -1,18 +1,18 @@
 <p align="center"><img src="public/icon.svg" width="88" alt="Patchwork Pod icon"></p>
 <h1 align="center">Patchwork Pod</h1>
 <p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong><br>Developed with AI assistance</p>
-<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.5.0">Try 1.5.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
+<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.6.0">Try 1.6.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
 
-**LBP3 requires the PS4 version.** Its LBPPC option needs complete extracted PS4 game files and the matching 1.28 update. A PS3 copy or PS3 PKG of LBP3 cannot be imported into this launcher. PS4 PKGs are not imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
+**LBP3 has two editions in 1.6.0:** choose **PS3 / RPCS3** for PS3 folders or PS3 PKGs, or **PS4 / LBPPC** for the native port. Only LBPPC requires complete extracted **PS4 version 1.28** game/update files. PS4 PKGs cannot be imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
 
 Free, unofficial Windows launcher for LittleBigPlanet 1, 2 and 3. Link your games, install their engines and customize your library with translucent Popit-style menus, colors, local covers and backgrounds.
 
 ## Start here
 
 1. Download the **x64-setup.exe**, or extract **Windows-x64.zip** and open `patchwork-pod.exe`. The Source ZIP is for developers.
-2. Open a game in **Library** and install its engine: RPCS3 for LBP1/2, LBPPC for LBP3.
-3. Choose **Game files**, select the game, then **Choose game folder**. Version 1.5.0 also offers **Install PS3 PKG** for LBP1/2.
-4. For LBP3, link a matching **1.28 update** unless the game folder already contains that version.
+2. Open a game in **Library** and install its engine: RPCS3 for PS3 games; for LBP3 choose **Game edition / engine** before importing.
+3. Choose **Game files**, select the game, then **Choose game folder**. Version 1.6.0 offers **Install PS3 PKG** for all three PS3 games.
+4. For **LBP3 / LBPPC only**, link a complete matching **1.28 update** unless it is already combined into the game. RPCS3 does not use PS4 updates.
 5. **Validate**, then **Play**.
 
 Windows 10/11 x64 and WebView2 are required. Builds are unsigned; SHA256SUMS accompany downloads. No games, firmware or keys are bundled. The default Sackboy background, game covers and Popit color icons are included.
@@ -22,7 +22,8 @@ Windows 10/11 x64 and WebView2 are required. Builds are unsigned; SHA256SUMS acc
 | Game | Choose | What the folder contains |
 | --- | --- | --- |
 | LBP1 / LBP2 | Extracted PS3 game folder, or **Install PS3 PKG** in 1.5.0 | `PS3_GAME/PARAM.SFO` and `PS3_GAME/USRDIR/EBOOT.BIN`, or `PARAM.SFO` and `USRDIR/EBOOT.BIN` directly. |
-| LBP3 | Extracted **PS4** game folder | `eboot.bin`, `base_001.farc`, `sce_sys/param.sfo`. US CUSA00473 / Europe CUSA00063, update 1.28. |
+| LBP3 / PS3 / RPCS3 (1.6.0) | Extracted PS3 folder, or **Install PS3 PKG** | Same PS3 folder layout as LBP1/2. Requires official PS3 firmware and any game license. |
+| LBP3 / PS4 / LBPPC | Extracted **PS4** game folder | `eboot.bin`, `base_001.farc`, `sce_sys/param.sfo`. US CUSA00473 / Europe CUSA00063, update 1.28. |
 
 **A PKG is a file, not a game folder.** The new PS3 PKG button installs it through RPCS3 and links a matching installed LBP folder. Required licenses must come from your own copy. PS4 PKGs are not supported. Extract ZIP/7z/RAR archives before linking their game folders; a lone BIN, FARC or SFO is incomplete. [Folder examples and instructions](docs/USAGE.md#game-imports).
 
