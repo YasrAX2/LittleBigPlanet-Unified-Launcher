@@ -213,6 +213,7 @@ pub fn clear_data(s: tauri::State<Store>, id: String, update: bool) -> Result<Co
 #[tauri::command]
 pub fn import_engine(s: tauri::State<Store>, engine: String, path: String) -> Result<Config> {
     idle(&s)?;
+    if engine=="lbprecomp" { return Err("LittleBigRecomp currently supports Apple Silicon macOS only. Use RPCS3 on Windows.".into()); }
     if !["lbppc", "rpcs3", "lbprecomp", "replanet"].contains(&engine.as_str()) {
         return Err("Unknown engine".into());
     }
@@ -279,7 +280,7 @@ pub fn game_settings(s: tauri::State<Store>, id: String, changes: Value) -> Resu
         }
         if let Some(v) = changes.get("engine").and_then(Value::as_str) {
             let allowed = match id.as_str() {
-                "lbp1" => ["rpcs3", "lbprecomp"],
+                "lbp1" => ["rpcs3", "rpcs3"],
                 "lbp2" => ["rpcs3", "replanet"],
                 _ => ["lbppc", "rpcs3"],
             };
@@ -451,7 +452,8 @@ pub fn launch_args(g: &Game, settings: bool) -> Result<Vec<String>> {
             Ok(args)
         }
         "lbppc" => Ok(vec!["--play".into()]),
-        "lbprecomp" | "replanet" => Ok(vec![]),
+        "lbprecomp" => Err("LittleBigRecomp is macOS-only; use RPCS3 on Windows.".into()),
+        "replanet" => Ok(vec![]),
         _ => Err("Unknown engine".into()),
     }
 }
@@ -610,6 +612,7 @@ pub fn open_link(key: String) -> Result<()> {
         "rpcs3" => "https://rpcs3.net/quickstart",
         "firmware" => "https://www.playstation.com/en-us/support/hardware/ps3/system-software/",
         "privacy" => "https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/blob/main/PRIVACY.md",
+        "contributor" => "https://github.com/KodkTheMan",
         "project" => "https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher",
         _ => return Err("Unknown link".into()),
     };

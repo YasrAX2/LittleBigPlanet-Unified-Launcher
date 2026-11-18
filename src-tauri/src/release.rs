@@ -2,7 +2,7 @@ use crate::model::{err, Result};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 pub fn repo(engine: &str) -> Result<&'static str> {
-    match engine{"lbppc"=>Ok("emurphy04/LBPPC"),"rpcs3"=>Ok("RPCS3/rpcs3-binaries-win"),"lbprecomp"=>Ok("benjidotsh/LittleBigRecomp"),"replanet"=>Err("RePlanet has no verified public release source. Use RPCS3; check the author's announcement for news.".into()),_=>Err("Unknown adapter".into())}
+    match engine{"lbppc"=>Ok("emurphy04/LBPPC"),"rpcs3"=>Ok("RPCS3/rpcs3-binaries-win"),"lbprecomp"=>Err("LittleBigRecomp currently supports Apple Silicon macOS only. No official Windows build is available; use RPCS3.".into()),"replanet"=>Err("RePlanet has no verified public release source. Use RPCS3; check the author's announcement for news.".into()),_=>Err("Unknown adapter".into())}
 }
 pub fn client() -> Result<reqwest::blocking::Client> {
     reqwest::blocking::Client::builder()

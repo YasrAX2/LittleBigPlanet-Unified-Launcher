@@ -1,7 +1,7 @@
 <p align="center"><img src="public/icon.svg" width="88" alt="Patchwork Pod icon"></p>
 <h1 align="center">Patchwork Pod</h1>
 <p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong><br>Developed with AI assistance</p>
-<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.6.0">Try 1.6.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
+<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.6.1">Try 1.6.1</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
 
 **LBP3 has two editions in 1.6.0:** choose **PS3 / RPCS3** for PS3 folders or PS3 PKGs, or **PS4 / LBPPC** for the native port. Only LBPPC requires complete extracted **PS4 version 1.28** game/update files. PS4 PKGs cannot be imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
 
@@ -73,12 +73,12 @@ Development: `npm run tauri -- dev`. The frontend requires the Tauri backend. [U
 
 </details>
 
-## Contributors
+## [Contributors](https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/graphs/contributors)
 
 | Contributor | Credit |
 | --- | --- |
 | **yasrax2** | Project creator; feature ideas, feature design and project direction. |
-| **shawarma1m8ly** | Suggested the initial idea for this LittleBigPlanet PC launcher. |
+| **[KodkTheMan](https://github.com/KodkTheMan)** (formerly shawarma1m8ly) | Suggested the initial idea for this LittleBigPlanet PC launcher. |
 
 Development was assisted by AI, including code implementation, debugging, research and documentation, under **yasrax2**'s direction. [Full contributor credits](CONTRIBUTORS.md).
 
@@ -91,3 +91,7 @@ No launcher account, ads or analytics. Imported pictures stay local; automatic r
 ### Default appearance
 
 New installs use the included Sackboy background with 8 px blur, black-and-green colors and 55% panel opacity. Existing users can select **Settings > Restore default look**. This resets appearance only; game paths, saves and accessibility settings remain unchanged. Custom imported pictures stay local. Artwork credits and ownership are described in [image sources](docs/IMAGE-SOURCES.md).
+
+LittleBigRecomp currently targets Apple Silicon macOS with Metal. It has no official Windows build and is not offered as a Windows engine. Use RPCS3 for LBP1 here.
+
+RPCS3 settings compatibility: console identifiers retain their exact hexadecimal text when creating a launcher-owned profile. Original RPCS3 configuration files are not rewritten. Invalid settings still stop profile generation.
