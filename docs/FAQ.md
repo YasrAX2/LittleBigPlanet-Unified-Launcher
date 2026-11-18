@@ -81,3 +81,11 @@ Import validation checks metadata and paths, not every encrypted/missing/corrupt
 ### Why does LBPPC need 1.28?
 
 It supports that exact PS4 game version because its binary patches target that build. It is not a general requirement to use the latest game update. The separate RPCS3 option runs the PS3 edition and does not require PS4 version 1.28.
+
+### Is there a native LBP2 PC version?
+
+Native projects exist, including RePlanet, ps3recomp-lbp2 and the experimental craftworld-rs runtime. A complete, ready-to-play Windows replacement was not verified in the 18 November 2026 review. This launcher supports LBP2 through RPCS3. [Research and primary sources](PC-PORTS-RESEARCH.md).
+
+### Do I need to build LBPPC? Can it remember my account?
+
+No build is required: Install LBPPC downloads the official Windows engine. The optional source-build button installs compiler tools and builds a separate engine. Sign in / Create account opens the official browser flow and saves a Windows-protected session for automatic engine sign-in. You complete registration yourself. [Build and account guide](LBPPC-SETUP.md).

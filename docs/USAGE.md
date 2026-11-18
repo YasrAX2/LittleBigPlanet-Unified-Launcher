@@ -166,3 +166,7 @@ Technical setup details and verification limits: [PS3 setup](PS3-SETUP.md).
 ## LBP3 PS3 support in 1.6.0
 
 Open **Library > LittleBigPlanet 3 > Game edition / engine > PS3 · RPCS3 emulator**. Install/import RPCS3 and prepare its official firmware, then select a complete extracted PS3 game folder or use **Install PS3 PKG**. Game licenses remain user-supplied in RPCS3. PS4 packages are rejected. **Discover games** also finds LBP3 in RPCS3. Switching editions resets only linked game/update metadata and video overrides; favorites, artwork, playtime and physical files are preserved. Link that edition again after switching back. PS3 saves stay in RPCS3; they are separate from the PS4 port. The PS4 1.28 update requirement does not apply to RPCS3. Emulator compatibility and FPS depend on the game, settings and hardware.
+
+## LBPPC source builds and accounts in 1.7.0
+
+Open **Downloads > Build and set up LBPPC** for **Build LBPPC from source**, **Check and set up game**, and **Sign in / Create account**. The browser handles passwords; the engine remembers a Windows-protected session for automatic sign-in. [Full instructions and limits](LBPPC-SETUP.md).

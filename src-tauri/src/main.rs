@@ -6,6 +6,7 @@ mod model;
 mod release;
 mod video;
 mod ps3;
+mod lbppc;
 use tauri::Manager;
 fn main() {
     std::panic::set_hook(Box::new(|_| {
@@ -18,10 +19,21 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(w) = app.get_webview_window("main") {
+                let _ = w.unminimize();
                 let _ = w.show();
                 let _ = w.set_focus();
             }
         }))
+        .on_window_event(|window,event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if let Some(s)=window.app_handle().try_state::<model::Store>() {
+                    if *s.busy.lock().unwrap() || !s.running.lock().unwrap().is_empty() {
+                        api.prevent_close();
+                        if let Some(w)=window.app_handle().get_webview_window("main") { let _=w.eval("window.dispatchEvent(new CustomEvent('pod-busy-close'))"); }
+                    }
+                }
+            }
+        })
         .setup(|app| {
             let dir = if cfg!(debug_assertions) {
                 std::env::var_os("PATCHWORK_TEST_HOME")
@@ -36,6 +48,9 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::snapshot,
+            lbppc::build_lbppc,
+            lbppc::lbppc_setup,
+            lbppc::cancel_lbppc_signin,
             commands::preferences,
             commands::pick,
             commands::import_data,

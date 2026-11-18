@@ -457,7 +457,7 @@ pub fn launch_args(g: &Game, settings: bool) -> Result<Vec<String>> {
         _ => Err("Unknown engine".into()),
     }
 }
-fn sync_lbppc(i: &Installation, g: &Game) -> Result<()> {
+pub(crate) fn sync_lbppc(i: &Installation, g: &Game) -> Result<()> {
     let root = Path::new(&i.root);
     let path = root.join("user/launcher.json");
     download::no_links(&path)?;
@@ -577,6 +577,7 @@ pub fn open_location(s: tauri::State<Store>, kind: String, id: Option<String>) -
             let path=s.dir.join("native-tests").join(g.video.target_fps.to_string());
             download::no_links(&path)?;fs::create_dir_all(&path).map_err(err)?;path
         },
+        "buildLogs" => {let path=s.dir.join("builds");download::no_links(&path)?;fs::create_dir_all(&path).map_err(err)?;path},
         "config" => s.dir.clone(),
         "installRoot" => PathBuf::from(c.install_root),
         "engine" => PathBuf::from(

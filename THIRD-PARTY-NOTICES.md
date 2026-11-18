@@ -14,3 +14,5 @@ This launcher was independently written. No LBPPC, RPCS3, LittleBigRecomp or Rec
 - Rust dependencies retain their own licenses in the Cargo registry. Exact versions are pinned in Cargo.lock. JavaScript versions are pinned in package-lock.json.
 
 Public packages include the default Sackboy background, three LittleBigPlanet covers and ten Popit color icons selected by yasrax2. These remain the property of their respective rights holders and are excluded from the code's MIT license. No open-content license is claimed for this game imagery. Custom imported images remain local. The independently drawn launcher icon and licensed fonts retain their separate notices. See docs/IMAGE-SOURCES.md for the asset inventory.
+
+The optional LBPPC source build separately downloads MSYS2, upstream source/submodules, Windows Python if needed, and Python packaging dependencies. These tools and resulting engine binaries are not embedded in Patchwork Pod. Their upstream licenses/notices accompany their installations and the built engine package.

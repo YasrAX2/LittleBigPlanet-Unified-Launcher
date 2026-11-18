@@ -1,11 +1,13 @@
 <p align="center"><img src="public/icon.svg" width="88" alt="Patchwork Pod icon"></p>
 <h1 align="center">Patchwork Pod</h1>
 <p align="center">Your LittleBigPlanet library, together on Windows.<br>Created by <strong>yasrax2</strong><br>Developed with AI assistance</p>
-<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.6.1">Try 1.6.1</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
+<p align="center"><a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/latest">Download stable</a> · <a href="https://github.com/YasrAX2/LittleBigPlanet-Unified-Launcher/releases/tag/v1.7.0">Try 1.7.0</a> · <a href="docs/USAGE.md">Complete guide</a> · <a href="docs/FAQ.md">Questions & answers</a></p>
 
 **LBP3 has two editions in 1.6.0:** choose **PS3 / RPCS3** for PS3 folders or PS3 PKGs, or **PS4 / LBPPC** for the native port. Only LBPPC requires complete extracted **PS4 version 1.28** game/update files. PS4 PKGs cannot be imported directly. [LBPPC requirements](https://github.com/emurphy04/LBPPC#Getting-started).
 
 Free, unofficial Windows launcher for LittleBigPlanet 1, 2 and 3. Link your games, install their engines and customize your library with translucent Popit-style menus, colors, local covers and backgrounds.
+
+**New in 1.7.0:** LBPPC source builds with automatic compiler setup, official browser sign-in/account creation, protected remembered sign-in, game-file setup checks and a fix for invisible launcher windows. [Build and online setup](docs/LBPPC-SETUP.md) · [LBP1/2/3 PC project research](docs/PC-PORTS-RESEARCH.md).
 
 ## Start here
 

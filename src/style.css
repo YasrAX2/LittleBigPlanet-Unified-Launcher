@@ -52,3 +52,5 @@
 :root[data-typography=wiki] h1,:root[data-typography=wiki] h2,:root[data-typography=wiki] h3{font-weight:800}:root[data-typography=wiki] .brand strong{font-weight:800}:root[data-typography=wiki] p{line-height:1.75}
 
 .platform-requirement{font-size:.82rem;font-weight:600;margin:8px 0;color:var(--ink)}
+
+.lbppc-setup{margin-top:24px;padding-top:8px}.lbppc-setup h3{margin-top:18px}.lbppc-setup p{margin-top:10px}
